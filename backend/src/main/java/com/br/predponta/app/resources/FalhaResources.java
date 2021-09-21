@@ -18,22 +18,22 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.br.predponta.app.dto.ProductDTO;
-import com.br.predponta.app.servicies.ProductService;
+import com.br.predponta.app.dto.FalhaDTO;
+import com.br.predponta.app.servicies.FalhaService;
 
 @RestController
-@RequestMapping(value= "/products")
-public class ProductResources {
+@RequestMapping(value= "/falhas")
+public class FalhaResources {
 	
 	@Autowired
-	private ProductService service;
+	private FalhaService service;
 	
 	@GetMapping
-	public ResponseEntity<Page<ProductDTO>> findAll(
+	public ResponseEntity<Page<FalhaDTO>> findAll(
 			@RequestParam(value = "page", defaultValue = "0") Integer page,
 			@RequestParam(value = "linesPerPage", defaultValue = "12") Integer linesPerPage,
 			@RequestParam(value = "direction", defaultValue = "ASC") String direction,
-			@RequestParam(value = "orderBy", defaultValue = "name") String orderBy
+			@RequestParam(value = "orderBy", defaultValue = "fal_codigo") String orderBy
 			
 			){
 		
@@ -42,35 +42,35 @@ public class ProductResources {
 		
 		
 		
-		Page <ProductDTO> list = service.findAllPaged(pageRequest);
+		Page <FalhaDTO> list = service.findAllPaged(pageRequest);	
 		
 		return ResponseEntity.ok().body(list);
-	}	
+		}
 		
-	@GetMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> findById(@PathVariable Long id){
-		ProductDTO dto = service.findById(id);
+	@GetMapping(value = "/{fal_codigo}")
+	public ResponseEntity<FalhaDTO> findById(@PathVariable Long fal_codigo){
+		FalhaDTO dto = service.findById(fal_codigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
 	@PostMapping
-	public ResponseEntity<ProductDTO> insert(@RequestBody ProductDTO dto){
+	public ResponseEntity<FalhaDTO> insert(@RequestBody FalhaDTO dto){
 		dto = service.insert (dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
-				.buildAndExpand(dto.getId()).toUri();
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{fal_codigo}")
+				.buildAndExpand(dto.getFal_codigo()).toUri();
 		
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@PutMapping(value = "/{id}")
-	public ResponseEntity<ProductDTO> update(@PathVariable Long id,@RequestBody ProductDTO dto){
-		dto = service.update (id, dto);
+	@PutMapping(value = "/{fal_codigo}")
+	public ResponseEntity<FalhaDTO> update(@PathVariable Long fal_codigo,@RequestBody FalhaDTO dto){
+		dto = service.update (fal_codigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@DeleteMapping(value = "/{id}")
-	public ResponseEntity<Void> delete(@PathVariable Long id){
-		service.delete (id);
+	@DeleteMapping(value = "/{fal_codigo}")
+	public ResponseEntity<Void> delete(@PathVariable Long fal_codigo){
+		service.delete (fal_codigo);
 		return ResponseEntity.noContent().build();
 	}
 	
