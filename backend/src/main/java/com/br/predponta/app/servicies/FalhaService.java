@@ -8,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,10 +29,10 @@ public class FalhaService {
 	
 	
 	@Transactional (readOnly = true)
-	public Page<FalhaDTO> findAllPaged(PageRequest pageRequest){
-		Page <Falha> list=repository.findAll(pageRequest);
-		return list.map(x -> new FalhaDTO(x));	
-	}
+    public Page<FalhaDTO> findAllPaged(Pageable pageable){
+        Page <Falha> list=repository.findAll(pageable);
+        return list.map(x -> new FalhaDTO(x));
+    }
 
 	
 	@Transactional (readOnly = true)
