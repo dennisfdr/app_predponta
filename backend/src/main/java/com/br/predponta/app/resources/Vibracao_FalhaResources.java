@@ -16,26 +16,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import com.br.predponta.app.dto.FalhaDTO;
-import com.br.predponta.app.servicies.FalhaService;
+
+import com.br.predponta.app.dto.Vibracao_FalhaDTO;
+import com.br.predponta.app.servicies.Vibracao_FalhaService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value= "/falhas")
+@RequestMapping(value= "/vibracao_falhas")
 @Api(value="API REST Falhas")
 @CrossOrigin(origins = "*")
 
-public class FalhaResources {
+public class Vibracao_FalhaResources {
 	
 	@Autowired
-	private FalhaService service;
+	private Vibracao_FalhaService service;
 	
-	@ApiOperation(value="Busca todas as falhas")
+	@ApiOperation(value="Busca todas as vibrações falhas")
 	@GetMapping
-	public ResponseEntity<List<FalhaDTO>> findAll(){
-		List <FalhaDTO> list = service.findAll();
+	public ResponseEntity<List<Vibracao_FalhaDTO>> findAll(){
+		List <Vibracao_FalhaDTO> list = service.findAll();
 		return ResponseEntity.ok().body(list);
 	}
 	
@@ -48,16 +49,16 @@ public class FalhaResources {
     //    }
 	
 	
-	@ApiOperation(value="Busca Falha por ID")
+	@ApiOperation(value="Busca vibração falha por ID")
 	@GetMapping(value = "/{fal_codigo}")
-	public ResponseEntity<FalhaDTO> findById(@PathVariable Long fal_codigo){
-		FalhaDTO dto = service.findById(fal_codigo);
+	public ResponseEntity<Vibracao_FalhaDTO> findById(@PathVariable Long fal_codigo){
+		Vibracao_FalhaDTO dto = service.findById(fal_codigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva Falha")
+	@ApiOperation(value="Salva vibração falha")
 	@PostMapping
-	public ResponseEntity<FalhaDTO> insert(@RequestBody FalhaDTO dto){
+	public ResponseEntity<Vibracao_FalhaDTO> insert(@RequestBody Vibracao_FalhaDTO dto){
 		dto = service.insert (dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{fal_codigo}")
 				.buildAndExpand(dto.getFal_codigo()).toUri();
@@ -65,14 +66,14 @@ public class FalhaResources {
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@ApiOperation(value="Atualiza falha")
+	@ApiOperation(value="Atualiza vibração falha")
 	@PutMapping(value = "/{fal_codigo}")
-	public ResponseEntity<FalhaDTO> update(@PathVariable Long fal_codigo,@RequestBody FalhaDTO dto){
+	public ResponseEntity<Vibracao_FalhaDTO> update(@PathVariable Long fal_codigo,@RequestBody Vibracao_FalhaDTO dto){
 		dto = service.update (fal_codigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@ApiOperation(value="Deleta falha")
+	@ApiOperation(value="Deleta vibração falha")
 	@DeleteMapping(value = "/{fal_codigo}")
 	public ResponseEntity<Void> delete(@PathVariable Long fal_codigo){
 		service.delete (fal_codigo);

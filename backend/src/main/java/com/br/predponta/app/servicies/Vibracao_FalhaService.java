@@ -14,58 +14,58 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.br.predponta.app.dto.FalhaDTO;
-import com.br.predponta.app.entities.Falha;
+import com.br.predponta.app.dto.Vibracao_FalhaDTO;
+import com.br.predponta.app.entities.Vibracao_Falha;
+import com.br.predponta.app.repositories.Vibracao_FalhaRepository;
 
-import com.br.predponta.app.repositories.FalhaRepository;
 import com.br.predponta.app.servicies.exceptions.DataBaseException;
 import com.br.predponta.app.servicies.exceptions.ResourceNotFoundException;
 
 
 @Service
-public class FalhaService {
+public class Vibracao_FalhaService {
 	
 	
 	@Autowired
-	private FalhaRepository repository;
+	private Vibracao_FalhaRepository repository;
 	
 	@Transactional (readOnly= true)
-	public List <FalhaDTO> findAll(){
-		List<Falha> list =repository.findAll();
-		return list.stream().map(x -> new FalhaDTO(x)).collect(Collectors.toList());
+	public List <Vibracao_FalhaDTO> findAll(){
+		List<Vibracao_Falha> list =repository.findAll();
+		return list.stream().map(x -> new Vibracao_FalhaDTO(x)).collect(Collectors.toList());
 	}
 	
 	
 	
 	@Transactional (readOnly = true)
-    public Page<FalhaDTO> findAllPaged(Pageable pageable){
-        Page <Falha> list=repository.findAll(pageable);
-        return list.map(x -> new FalhaDTO(x));
+    public Page<Vibracao_FalhaDTO> findAllPaged(Pageable pageable){
+        Page <Vibracao_Falha> list=repository.findAll(pageable);
+        return list.map(x -> new Vibracao_FalhaDTO(x));
     }
 
 	
 	@Transactional (readOnly = true)
-	public FalhaDTO findById(Long fal_codigo) {
-		Optional<Falha> obj = repository.findById(fal_codigo);
-		Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-		return new FalhaDTO(entity);
+	public Vibracao_FalhaDTO findById(Long fal_codigo) {
+		Optional<Vibracao_Falha> obj = repository.findById(fal_codigo);
+		Vibracao_Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		return new Vibracao_FalhaDTO(entity);
 	}
 	
 	@Transactional
-	public FalhaDTO insert(FalhaDTO dto) {
-		Falha entity = new Falha();
+	public Vibracao_FalhaDTO insert(Vibracao_FalhaDTO dto) {
+		Vibracao_Falha entity = new Vibracao_Falha();
 		entity.setFal_descricao(dto.getFal_descricao());
 		entity = repository.save(entity);
-		return new FalhaDTO(entity);	
+		return new Vibracao_FalhaDTO(entity);	
 	}
 	
 	@Transactional
-	public FalhaDTO update(Long fal_codigo, FalhaDTO dto) {
+	public Vibracao_FalhaDTO update(Long fal_codigo, Vibracao_FalhaDTO dto) {
 		try {
-			Falha entity = repository.getOne(fal_codigo);
+			Vibracao_Falha entity = repository.getOne(fal_codigo);
 			entity.setFal_descricao(dto.getFal_descricao());
 			entity = repository.save(entity);
-			return new FalhaDTO(entity);
+			return new Vibracao_FalhaDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
 		throw new  ResourceNotFoundException("Id not Found" + fal_codigo);
