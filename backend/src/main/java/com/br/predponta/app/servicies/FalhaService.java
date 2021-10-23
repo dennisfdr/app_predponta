@@ -54,7 +54,16 @@ public class FalhaService {
 	@Transactional
 	public FalhaDTO insert(FalhaDTO dto) {
 		Falha entity = new Falha();
+		
 		entity.setFal_descricao(dto.getFal_descricao());
+		entity.setHco_fk_ssc_codigo(dto.getHco_fk_ssc_codigo());
+		entity.setHco_codigo(dto.getHco_codigo());
+		entity.setHco_fk_ite_codigo(dto.getHco_fk_ite_codigo());
+		entity.setHco_fk_med_codigo(dto.getHco_fk_med_codigo());
+		entity.setHco_fk_sco_codigo(dto.getHco_fk_sco_codigo());
+		entity.setHco_observacao(dto.getHco_observacao());
+		entity.setHco_ordem_servico(dto.getHco_ordem_servico());
+		
 		entity = repository.save(entity);
 		return new FalhaDTO(entity);	
 	}
@@ -63,7 +72,16 @@ public class FalhaService {
 	public FalhaDTO update(Long fal_codigo, FalhaDTO dto) {
 		try {
 			Falha entity = repository.getOne(fal_codigo);
+			
 			entity.setFal_descricao(dto.getFal_descricao());
+			entity.setHco_fk_ssc_codigo(dto.getHco_fk_ssc_codigo());
+			entity.setHco_codigo(dto.getHco_codigo());
+			entity.setHco_fk_ite_codigo(dto.getHco_fk_ite_codigo());
+			entity.setHco_fk_med_codigo(dto.getHco_fk_med_codigo());
+			entity.setHco_fk_sco_codigo(dto.getHco_fk_sco_codigo());
+			entity.setHco_observacao(dto.getHco_observacao());
+			entity.setHco_ordem_servico(dto.getHco_ordem_servico());
+			
 			entity = repository.save(entity);
 			return new FalhaDTO(entity);
 		}

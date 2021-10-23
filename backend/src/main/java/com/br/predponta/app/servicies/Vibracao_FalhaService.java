@@ -27,45 +27,45 @@ public class Vibracao_FalhaService {
 	
 	
 	@Autowired
-	private Vibracao_FalhaRepository repository;
+	private  Vibracao_FalhaRepository repository;
 	
 	@Transactional (readOnly= true)
-	public List <Vibracao_FalhaDTO> findAll(){
-		List<Vibracao_Falha> list =repository.findAll();
-		return list.stream().map(x -> new Vibracao_FalhaDTO(x)).collect(Collectors.toList());
+	public List < Vibracao_FalhaDTO> findAll(){
+		List< Vibracao_Falha> list =repository.findAll();
+		return list.stream().map(x -> new  Vibracao_FalhaDTO(x)).collect(Collectors.toList());
 	}
 	
 	
 	
 	@Transactional (readOnly = true)
-    public Page<Vibracao_FalhaDTO> findAllPaged(Pageable pageable){
-        Page <Vibracao_Falha> list=repository.findAll(pageable);
-        return list.map(x -> new Vibracao_FalhaDTO(x));
+    public Page< Vibracao_FalhaDTO> findAllPaged(Pageable pageable){
+        Page < Vibracao_Falha> list=repository.findAll(pageable);
+        return list.map(x -> new  Vibracao_FalhaDTO(x));
     }
 
 	
 	@Transactional (readOnly = true)
-	public Vibracao_FalhaDTO findById(Long fal_codigo) {
-		Optional<Vibracao_Falha> obj = repository.findById(fal_codigo);
-		Vibracao_Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-		return new Vibracao_FalhaDTO(entity);
+	public  Vibracao_FalhaDTO findById(Long fal_codigo) {
+		Optional< Vibracao_Falha> obj = repository.findById(fal_codigo);
+		 Vibracao_Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		return new  Vibracao_FalhaDTO(entity);
 	}
 	
 	@Transactional
-	public Vibracao_FalhaDTO insert(Vibracao_FalhaDTO dto) {
-		Vibracao_Falha entity = new Vibracao_Falha();
+	public  Vibracao_FalhaDTO insert( Vibracao_FalhaDTO dto) {
+		 Vibracao_Falha entity = new  Vibracao_Falha();
 		entity.setFal_descricao(dto.getFal_descricao());
 		entity = repository.save(entity);
-		return new Vibracao_FalhaDTO(entity);	
+		return new  Vibracao_FalhaDTO(entity);	
 	}
 	
 	@Transactional
-	public Vibracao_FalhaDTO update(Long fal_codigo, Vibracao_FalhaDTO dto) {
+	public  Vibracao_FalhaDTO update(Long fal_codigo,  Vibracao_FalhaDTO dto) {
 		try {
-			Vibracao_Falha entity = repository.getOne(fal_codigo);
+			 Vibracao_Falha entity = repository.getOne(fal_codigo);
 			entity.setFal_descricao(dto.getFal_descricao());
 			entity = repository.save(entity);
-			return new Vibracao_FalhaDTO(entity);
+			return new  Vibracao_FalhaDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
 		throw new  ResourceNotFoundException("Id not Found" + fal_codigo);

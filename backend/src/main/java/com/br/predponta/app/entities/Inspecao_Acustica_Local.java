@@ -17,12 +17,12 @@ public class Inspecao_Acustica_Local implements Serializable{
 	private Long ial_codigo;
 	private String ial_descricao;
 	private Long ial_status;
-	private String ial_fk_set_codigo;
+	private Long ial_fk_set_codigo;
 	
 	public Inspecao_Acustica_Local () {
 			}
 
-	public Inspecao_Acustica_Local(Long ial_codigo, String ial_descricao, Long ial_status, String ial_fk_set_codigo) {
+	public Inspecao_Acustica_Local(Long ial_codigo, String ial_descricao, Long ial_status, Long ial_fk_set_codigo) {
 		super();
 		this.ial_codigo = ial_codigo;
 		this.ial_descricao = ial_descricao;
@@ -54,11 +54,11 @@ public class Inspecao_Acustica_Local implements Serializable{
 		this.ial_status = ial_status;
 	}
 
-	public String getIal_fk_set_codigo() {
+	public Long getIal_fk_set_codigo() {
 		return ial_fk_set_codigo;
 	}
 
-	public void setIal_fk_set_codigo(String ial_fk_set_codigo) {
+	public void setIal_fk_set_codigo(Long ial_fk_set_codigo) {
 		this.ial_fk_set_codigo = ial_fk_set_codigo;
 	}
 
