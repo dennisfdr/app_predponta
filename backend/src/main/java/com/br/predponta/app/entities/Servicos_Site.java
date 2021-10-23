@@ -23,7 +23,7 @@ public class Servicos_Site implements Serializable{
 	public Servicos_Site () {
 			}
 
-	public Servicos_Site(Long ssi_codigo, String ssi_descricao, String ssi_arquivo) {
+	public Servicos_Site(Long ssi_codigo, String ssi_descricao, String ssi_arquivo, Long fal_codigo, String fal_descricao) {
 		super();
 		this.ssi_codigo = ssi_codigo;
 		this.ssi_descricao = ssi_descricao;

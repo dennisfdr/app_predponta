@@ -68,6 +68,8 @@ public class Servicos_SiteService {
 			Servicos_Site entity = repository.getOne(ssi_codigo);
 			entity.setSsi_descricao(dto.getSsi_descricao());
 			entity.setSsi_arquivo(dto.getSsi_arquivo());
+			entity.setFal_codigo(dto.getFal_codigo());
+			entity.setFal_descricao(dto.getFal_descricao());
 			entity = repository.save(entity);
 			return new Servicos_SiteDTO(entity);
 		}
