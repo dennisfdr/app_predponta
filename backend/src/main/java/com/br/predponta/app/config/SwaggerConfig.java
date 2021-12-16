@@ -1,11 +1,10 @@
 package com.br.predponta.app.config;
 
-import static springfox.documentation.builders.PathSelectors.regex;
-
 import java.util.ArrayList;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RestController;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -23,15 +22,26 @@ public class SwaggerConfig {
 	@Bean
     public Docket predpontaApi() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .select()
+               .select()
                 .apis(RequestHandlerSelectors.basePackage("com.br.predponta.app"))
                 
                 .paths(PathSelectors.any())
 
                 .build()
                 .apiInfo(metaInfo());
-          
-    }
+      
+//   @Configuration
+//   @EnableSwagger2
+//        public class SwaggerConfig {
+	   
+//       	@Bean
+//        	public Docket predpontaApi() {
+//        		return new Docket(DocumentationType.SWAGGER_2).select()
+ //       				.apis(RequestHandlerSelectors.withClassAnnotation(RestController.class)).paths(PathSelectors.any())
+ //       				.build();
+        		
+        	}  
+            
 
     private ApiInfo metaInfo() {
 

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+
 import com.br.predponta.app.dto.FalhaDTO;
 import com.br.predponta.app.servicies.FalhaService;
 
@@ -32,7 +33,7 @@ public class FalhaResources {
 	@Autowired
 	private FalhaService service;
 	
-	@ApiOperation(value="Busca todas as falhas")
+	@ApiOperation(value="Busca todas as vibrações falhas")
 	@GetMapping
 	public ResponseEntity<List<FalhaDTO>> findAll(){
 		List <FalhaDTO> list = service.findAll();
@@ -48,18 +49,19 @@ public class FalhaResources {
     //    }
 	
 	
-	@ApiOperation(value="Busca Falha por ID")
+	@ApiOperation(value="Busca falha por ID")
 	@GetMapping(value = "/{fal_codigo}")
 	public ResponseEntity<FalhaDTO> findById(@PathVariable Long fal_codigo){
 		FalhaDTO dto = service.findById(fal_codigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva Falha")
+	@ApiOperation(value="Salva falha")
 	@PostMapping
 	public ResponseEntity<FalhaDTO> insert(@RequestBody FalhaDTO dto){
 		dto = service.insert (dto);
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{fal_codigo}")
+				
 				.buildAndExpand(dto.getFal_codigo()).toUri();
 		
 				return ResponseEntity.created(uri).body(dto);

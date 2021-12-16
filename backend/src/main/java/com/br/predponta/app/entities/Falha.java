@@ -1,127 +1,72 @@
 package com.br.predponta.app.entities;
 
 import java.io.Serializable;
+
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "falha")
 public class Falha implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long fal_codigo;
-	private String fal_descricao;
-	private Long hco_fk_ssc_codigo;
-	private Long hco_codigo;
-	private Long hco_fk_ite_codigo; 
-	private Long hco_fk_med_codigo;
-	private Long hco_fk_sco_codigo;
-	private Long hco_observacao;
-	private Long hco_ordem_servico;
-	
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Basic(optional = false)
+    @Column(name = "fal_codigo")
+    private Integer falCodigo;
+    @Basic(optional = false)
+    @NotNull
+    @Size(min = 1, max = 80)
+    @Column(name = "fal_descricao")
+    private String falDescricao;
+    
+/*    @JoinColumn(name = "relatorio_intervencao_ri_codigo", referencedColumnName = "ri_codigo")
+    @ManyToOne(optional = false)
+    private RelatorioIntervencao relatorioIntervencaoRiCodigo;
+*/	
 	public Falha () {
 			}
 
-	public Falha(Long fal_codigo, String fal_descricao, Long hco_fk_ssc_codigo, Long hco_codigo, Long hco_fk_ite_codigo, Long hco_fk_med_codigo, Long hco_fk_sco_codigo, Long hco_observacao, Long hco_ordem_servico) {
+	public Falha(Integer falCodigo, @NotNull @Size(min = 1, max = 80) String falDescricao) {
 		super();
-		this.fal_codigo = fal_codigo;
-		this.fal_descricao = fal_descricao;
-		this.hco_fk_ssc_codigo = hco_fk_ssc_codigo;
-		this.hco_codigo = hco_codigo;
-		this.hco_fk_ite_codigo = hco_fk_ite_codigo; 
-		this.hco_fk_med_codigo = hco_fk_med_codigo;
-		this.hco_fk_sco_codigo = hco_fk_sco_codigo;
-		this.hco_observacao = hco_observacao;
-		this.hco_ordem_servico = hco_ordem_servico;
+
+        this.falCodigo = falCodigo;
+        this.falDescricao = falDescricao;
+		
 	}
 
-	public Long getFal_codigo() {
-		return fal_codigo;
+	public Integer getFalCodigo() {
+		return falCodigo;
 	}
 
-	public void setFal_codigo(Long fal_codigo) {
-		this.fal_codigo = fal_codigo;
+	public void setFalCodigo(Integer falCodigo) {
+		this.falCodigo = falCodigo;
 	}
 
-	public String getFal_descricao() {
-		return fal_descricao;
+	public String getFalDescricao() {
+		return falDescricao;
 	}
 
-	public void setFal_descricao(String fal_descricao) {
-		this.fal_descricao = fal_descricao;
-	}
-	
-	public Long getHco_fk_ssc_codigo() {
-		return hco_fk_ssc_codigo;
+	public void setFalDescricao(String falDescricao) {
+		this.falDescricao = falDescricao;
 	}
 
-	public void setHco_fk_ssc_codigo(Long hco_fk_ssc_codigo) {
-		this.hco_fk_ssc_codigo = hco_fk_ssc_codigo;
-	}
 
-	public Long getHco_codigo() {
-		return hco_codigo;
-	}
-
-	public void setHco_codigo(Long hco_codigo) {
-		this.hco_codigo = hco_codigo;
-	}
-
-	public Long getHco_fk_ite_codigo() {
-		return hco_fk_ite_codigo;
-	}
-
-	public void setHco_fk_ite_codigo(Long hco_fk_ite_codigo) {
-		this.hco_fk_ite_codigo = hco_fk_ite_codigo;
-	}
-
-	public Long getHco_fk_med_codigo() {
-		return hco_fk_med_codigo;
-	}
-
-	public void setHco_fk_med_codigo(Long hco_fk_med_codigo) {
-		this.hco_fk_med_codigo = hco_fk_med_codigo;
-	}
-
-	public Long getHco_fk_sco_codigo() {
-		return hco_fk_sco_codigo;
-	}
-
-	public void setHco_fk_sco_codigo(Long hco_fk_sco_codigo) {
-		this.hco_fk_sco_codigo = hco_fk_sco_codigo;
-	}
-
-	public Long getHco_observacao() {
-		return hco_observacao;
-	}
-
-	public void setHco_observacao(Long hco_observacao) {
-		this.hco_observacao = hco_observacao;
-	}
-
-	public Long getHco_ordem_servico() {
-		return hco_ordem_servico;
-	}
-
-	public void setHco_ordem_servico(Long hco_ordem_servico) {
-		this.hco_ordem_servico = hco_ordem_servico;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((fal_codigo == null) ? 0 : fal_codigo.hashCode());
+		result = prime * result + ((falCodigo == null) ? 0 : falCodigo.hashCode());
 		return result;
-	}
-
-	public static long getSerialversionufal_codigo() {
-		return serialVersionUID;
 	}
 
 	@Override
@@ -133,11 +78,13 @@ public class Falha implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		Falha other = (Falha) obj;
-		if (fal_codigo == null) {
-			if (other.fal_codigo != null)
+		if (falCodigo == null) {
+			if (other.falCodigo != null)
 				return false;
-		} else if (!fal_codigo.equals(other.fal_codigo))
+		} else if (!falCodigo.equals(other.falCodigo))
 			return false;
 		return true;
 	}
+
+
 }
