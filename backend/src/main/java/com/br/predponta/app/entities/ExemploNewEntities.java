@@ -8,8 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,7 +15,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "empresa_email")
-public class EmpresaEmail implements Serializable{
+public class ExemploNewEntities implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -36,26 +34,19 @@ public class EmpresaEmail implements Serializable{
     @Size(min = 1, max = 80)
     @Column(name = "eme_responsavel")
     private String emeResponsavel;
-    
-//### Relacionamentos ###
-    
-    @JoinColumn(name = "empresa_emp_codigo", referencedColumnName = "emp_codigo")
-    @ManyToOne(optional = false)
-    private Empresa empresaEmpCodigo;   
-    
-//      
-    
   
-    public EmpresaEmail() {
+    public ExemploNewEntities(Integer emeCodigo) {
+    
+    this.emeCodigo = emeCodigo;
     }
     
-	public EmpresaEmail(Integer emeCodigo, @NotNull @Size(min = 1, max = 250) String emeEmail, @NotNull @Size(min = 1, max = 80) String emeResponsavel, Empresa empresaEmpCodigo){
+	public ExemploNewEntities(Integer emeCodigo, @NotNull @Size(min = 1, max = 250) String emeEmail, @NotNull @Size(min = 1, max = 80) String emeResponsavel){
 		super();
 		
 	    this.emeCodigo = emeCodigo;
         this.emeEmail = emeEmail;
         this.emeResponsavel = emeResponsavel;	
-		this.empresaEmpCodigo = empresaEmpCodigo;		
+				
 	}
 	
 //Generate Getters and Setters;
@@ -84,16 +75,7 @@ public class EmpresaEmail implements Serializable{
 		this.emeResponsavel = emeResponsavel;
 	}
 	
-	public Empresa getEmpresaEmpCodigo() {
-		return empresaEmpCodigo;
-	}
-
-	public void setEmpresaEmpCodigo(Empresa empresaEmpCodigo) {
-		this.empresaEmpCodigo = empresaEmpCodigo;	
-
 //Generate hadsCode() and  equals()  somente do id;
-
-	}
 
 	@Override
 	public int hashCode() {
@@ -111,7 +93,7 @@ public class EmpresaEmail implements Serializable{
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		EmpresaEmail other = (EmpresaEmail) obj;
+		ExemploNewEntities other = (ExemploNewEntities) obj;
 		if (emeCodigo == null) {
 			if (other.emeCodigo != null)
 				return false;

@@ -1,11 +1,8 @@
 package com.br.predponta.app.entities;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -74,24 +71,14 @@ public class Empresa implements Serializable{
     @Temporal(TemporalType.DATE)
     private Date empProxMedicaoMca;
     
-//
-//   
+//### Relacionamentos ###
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresaEmpCodigo")
-    private List<ArquivoUpload> arquivoUploadCollection = new ArrayList<>();
+    private Collection<EmpresaEmail> empresaEmailCollection;    
     
-//   @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresaEmpCodigo")
-//   private Collection<Setor> setorCollection;
-    
-    @OneToMany(cascade = CascadeType.ALL,mappedBy = "empresa")
-    private List<EmpresaEmail> empresaEmailCollection = new ArrayList<>();
-     
-	public List<EmpresaEmail> getEmpresaEmail() {
-		return empresaEmailCollection;
-	}
-        
-//
 //    
+    
+  
     public Empresa() {
     }
 
@@ -112,6 +99,7 @@ public class Empresa implements Serializable{
 	}
 	
 //
+//Generate Getters and Setters;
 //	
 	
 	public Integer getEmpCodigo() {
@@ -194,16 +182,16 @@ public class Empresa implements Serializable{
 		this.empProxMedicaoMca = empProxMedicaoMca;
 	}
 
-	public Collection<ArquivoUpload> getArquivoUploadCollection() {
-		return arquivoUploadCollection;
-	}
+//Generate hadsCode() and  equals()  somente do id;
 
 	public Collection<EmpresaEmail> getEmpresaEmailCollection() {
 		return empresaEmailCollection;
 	}
 
-//
-//	
+	public void setEmpresaEmailCollection(Collection<EmpresaEmail> empresaEmailCollection) {
+		this.empresaEmailCollection = empresaEmailCollection;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

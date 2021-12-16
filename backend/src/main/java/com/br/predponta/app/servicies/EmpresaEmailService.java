@@ -15,9 +15,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.br.predponta.app.dto.EmpresaEmailDTO;
+import com.br.predponta.app.entities.Empresa;
 import com.br.predponta.app.entities.EmpresaEmail;
 import com.br.predponta.app.repositories.EmpresaEmailRepository;
-
+import com.br.predponta.app.repositories.EmpresaRepository;
 import com.br.predponta.app.servicies.exceptions.DataBaseException;
 import com.br.predponta.app.servicies.exceptions.ResourceNotFoundException;
 
@@ -28,6 +29,8 @@ public class EmpresaEmailService {
 	
 	@Autowired
 	private  EmpresaEmailRepository repository;
+	@Autowired
+    private EmpresaRepository empresaRepository;
 	
 	@Transactional (readOnly= true)
 	public List <EmpresaEmailDTO> findAll(){
@@ -41,11 +44,10 @@ public class EmpresaEmailService {
         Page <EmpresaEmail> list=repository.findAll(pageable);
         return list.map(x -> new  EmpresaEmailDTO(x));
     }
-
 	
 	@Transactional (readOnly = true)
 	public  EmpresaEmailDTO findById(Integer emeCodigo) {
-		Optional<EmpresaEmail> obj = repository.findById(emeCodigo);
+		Optional< EmpresaEmail> obj = repository.findById(emeCodigo);
 		 EmpresaEmail entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return new  EmpresaEmailDTO(entity);
 	}
@@ -53,16 +55,17 @@ public class EmpresaEmailService {
 	@Transactional
 	public  EmpresaEmailDTO insert( EmpresaEmailDTO dto) {
 		 EmpresaEmail entity = new  EmpresaEmail();
-		 
-		 entity.setEmeCodigo(dto.getEmeCodigo());
-		 entity.setEmeEmail(dto.getEmeEmail());
-		 entity.setEmeResponsavel(dto.getEmeResponsavel());
+        
+         entity.setEmeCodigo(dto.getEmeCodigo());
+         entity.setEmeEmail(dto.getEmeEmail());
+         entity.setEmeResponsavel(dto.getEmeResponsavel());   
+          
+         Empresa empresaEmpCodigo = empresaRepository.getOne(dto.getEmpresaEmpCodigo());
+         entity.setEmpresaEmpCodigo(empresaEmpCodigo);
 
-		 
-	//	 entity.setEmpresaEmpCodigo(dto.getEmpresaEmpCodigo());
-		 
-		 entity = repository.save(entity);
-		 return new  EmpresaEmailDTO(entity);	
+				
+		entity = repository.save(entity);
+		return new  EmpresaEmailDTO(entity);	
 	}
 	
 	@Transactional
@@ -70,15 +73,14 @@ public class EmpresaEmailService {
 		try {
 			 EmpresaEmail entity = repository.getOne(emeCodigo);
 			 
-			 entity.setEmeCodigo(dto.getEmeCodigo());
-			 entity.setEmeEmail(dto.getEmeEmail());
-			 entity.setEmeResponsavel(dto.getEmeResponsavel());
-			 entity.setEmpresaEmpCodigo(dto.getEmpresaEmpCodigo());
-			 
-		//	 entity.setEmpresaEmpCodigo(dto.getEmpresaEmpCodigo());
-		 			 
-			 entity = repository.save(entity);
-			 return new  EmpresaEmailDTO(entity);
+	         entity.setEmeCodigo(dto.getEmeCodigo());
+	         entity.setEmeEmail(dto.getEmeEmail());
+	         entity.setEmeResponsavel(dto.getEmeResponsavel());
+			 			 
+			 // entity.setFalDescricao(dto.getFal_descricao());
+			
+			entity = repository.save(entity);
+						return new  EmpresaEmailDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
 		throw new  ResourceNotFoundException("Id not Found" + emeCodigo);
@@ -95,6 +97,17 @@ public class EmpresaEmailService {
 		catch (DataIntegrityViolationException e) {
 			throw new DataBaseException("Integity Violation");
 		}
+	}
+	
+
+
+	public EmpresaRepository getEmpresaRepository() {
+		return empresaRepository;
+	}
+
+
+	public void setEmpresaRepository(EmpresaRepository empresaRepository) {
+		this.empresaRepository = empresaRepository;
 	}
 
 }
