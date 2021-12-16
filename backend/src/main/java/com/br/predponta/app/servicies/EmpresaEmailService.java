@@ -57,7 +57,7 @@ public class EmpresaEmailService {
 		 entity.setEmeCodigo(dto.getEmeCodigo());
 		 entity.setEmeEmail(dto.getEmeEmail());
 		 entity.setEmeResponsavel(dto.getEmeResponsavel());
-		 entity.setEmpresaEmpCodigo(dto.getEmpresaEmpCodigo());
+
 		 
 	//	 entity.setEmpresaEmpCodigo(dto.getEmpresaEmpCodigo());
 		 
