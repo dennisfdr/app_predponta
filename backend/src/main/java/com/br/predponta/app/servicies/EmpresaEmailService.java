@@ -59,9 +59,9 @@ public class EmpresaEmailService {
          entity.setEmeCodigo(dto.getEmeCodigo());
          entity.setEmeEmail(dto.getEmeEmail());
          entity.setEmeResponsavel(dto.getEmeResponsavel());   
-          
-         Empresa empresaEmpCodigo = empresaRepository.getOne(dto.getEmpresaEmpCodigo());
-         entity.setEmpresaEmpCodigo(empresaEmpCodigo);
+         
+         Empresa empresa = empresaRepository.getOne(dto.getEmpresaempCodigo());
+         entity.setEmpresa(empresa);
 
 				
 		entity = repository.save(entity);
@@ -98,17 +98,5 @@ public class EmpresaEmailService {
 			throw new DataBaseException("Integity Violation");
 		}
 	}
-	
-
-
-	public EmpresaRepository getEmpresaRepository() {
-		return empresaRepository;
-	}
-
-
-	public void setEmpresaRepository(EmpresaRepository empresaRepository) {
-		this.empresaRepository = empresaRepository;
-	}
-
 }
 

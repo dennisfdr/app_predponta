@@ -1,8 +1,8 @@
 package com.br.predponta.app.entities;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -74,7 +74,7 @@ public class Empresa implements Serializable{
 //### Relacionamentos ###
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresaEmpCodigo")
-    private Collection<EmpresaEmail> empresaEmailCollection;    
+    private List<EmpresaEmail> empresaEmail;    
     
 //    
     
@@ -182,15 +182,11 @@ public class Empresa implements Serializable{
 		this.empProxMedicaoMca = empProxMedicaoMca;
 	}
 
+	public List<EmpresaEmail> getEmpresaEmail() {
+		return empresaEmail;
+	}	
+
 //Generate hadsCode() and  equals()  somente do id;
-
-	public Collection<EmpresaEmail> getEmpresaEmailCollection() {
-		return empresaEmailCollection;
-	}
-
-	public void setEmpresaEmailCollection(Collection<EmpresaEmail> empresaEmailCollection) {
-		this.empresaEmailCollection = empresaEmailCollection;
-	}
 
 	@Override
 	public int hashCode() {

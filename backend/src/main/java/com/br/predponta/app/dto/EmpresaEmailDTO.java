@@ -2,7 +2,6 @@ package com.br.predponta.app.dto;
 
 import java.io.Serializable;
 
-import com.br.predponta.app.entities.Empresa;
 import com.br.predponta.app.entities.EmpresaEmail;
 
 
@@ -13,18 +12,18 @@ public class EmpresaEmailDTO implements Serializable{
     private Integer emeCodigo;
     private String emeEmail;
     private String emeResponsavel;
-    private Empresa empresaEmpCodigo;
+    private Integer empresaempCodigo;
 			
 		public EmpresaEmailDTO () {
 			
 		}
 
-		public EmpresaEmailDTO(Integer emeCodigo, String emeEmail, String emeResponsavel, Empresa empresaEmpCodigo) {
+		public EmpresaEmailDTO(Integer emeCodigo, String emeEmail, String emeResponsavel, Integer empresaempCodigo) {
 			
 		    this.emeCodigo = emeCodigo;
 	        this.emeEmail = emeEmail;
 	        this.emeResponsavel = emeResponsavel;				
-			this.empresaEmpCodigo = empresaEmpCodigo;
+			this.empresaempCodigo = empresaempCodigo;
 		}
 		
 		public EmpresaEmailDTO (EmpresaEmail entity) {
@@ -32,8 +31,8 @@ public class EmpresaEmailDTO implements Serializable{
 		    this.emeCodigo = entity.getEmeCodigo();
 	        this.emeEmail = entity.getEmeEmail();
 	        this.emeResponsavel = entity.getEmeResponsavel();
-			this.empresaEmpCodigo = entity.getEmpresaEmpCodigo();
-		
+	        this.empresaempCodigo = entity.getEmpresa().getEmpCodigo();
+
 		}
 
 //Generate Getters and Setters;
@@ -62,12 +61,12 @@ public class EmpresaEmailDTO implements Serializable{
 			this.emeResponsavel = emeResponsavel;
 		}
 
-		public Empresa getEmpresaEmpCodigo() {
-			return empresaEmpCodigo;
+		public Integer getEmpresaempCodigo() {
+			return empresaempCodigo;
 		}
 
-		public void setEmpresaEmpCodigo(Empresa empresaEmpCodigo) {
-			this.empresaEmpCodigo = empresaEmpCodigo;
+		public void setEmpresaempCodigo(Integer empresaempCodigo) {
+			this.empresaempCodigo = empresaempCodigo;
 		}
 		
 }

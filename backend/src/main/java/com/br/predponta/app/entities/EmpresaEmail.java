@@ -41,21 +41,20 @@ public class EmpresaEmail implements Serializable{
     
     @JoinColumn(name = "empresa_emp_codigo", referencedColumnName = "emp_codigo")
     @ManyToOne(optional = false)
-    private Empresa empresaEmpCodigo;   
+    private Empresa empresa;   
     
 //      
-    
-  
+      
     public EmpresaEmail() {
     }
     
-	public EmpresaEmail(Integer emeCodigo, @NotNull @Size(min = 1, max = 250) String emeEmail, @NotNull @Size(min = 1, max = 80) String emeResponsavel, Empresa empresaEmpCodigo){
+	public EmpresaEmail(Integer emeCodigo, @NotNull @Size(min = 1, max = 250) String emeEmail, @NotNull @Size(min = 1, max = 80) String emeResponsavel, Empresa empresa){
 		super();
 		
 	    this.emeCodigo = emeCodigo;
         this.emeEmail = emeEmail;
         this.emeResponsavel = emeResponsavel;	
-		this.empresaEmpCodigo = empresaEmpCodigo;		
+		this.empresa = empresa;		
 	}
 	
 //Generate Getters and Setters;
@@ -84,16 +83,15 @@ public class EmpresaEmail implements Serializable{
 		this.emeResponsavel = emeResponsavel;
 	}
 	
-	public Empresa getEmpresaEmpCodigo() {
-		return empresaEmpCodigo;
+	public Empresa getEmpresa() {
+		return empresa;
 	}
 
-	public void setEmpresaEmpCodigo(Empresa empresaEmpCodigo) {
-		this.empresaEmpCodigo = empresaEmpCodigo;	
-
-//Generate hadsCode() and  equals()  somente do id;
-
+	public void setEmpresa(Empresa empresa) {
+		this.empresa = empresa;
 	}
+
+	//Generate hadsCode() and  equals()  somente do id;
 
 	@Override
 	public int hashCode() {
