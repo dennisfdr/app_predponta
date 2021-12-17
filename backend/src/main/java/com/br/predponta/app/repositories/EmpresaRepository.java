@@ -9,6 +9,4 @@ import com.br.predponta.app.entities.Empresa;
 @Repository
 public interface EmpresaRepository  extends JpaRepository <Empresa, Integer>{
 
-	Empresa getOne(Empresa empresaEmpCodigo);
-
 }

@@ -73,7 +73,7 @@ public class Empresa implements Serializable{
     
 //### Relacionamentos ###
     
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresaEmpCodigo")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresa")
     private List<EmpresaEmail> empresaEmail;    
     
 //    

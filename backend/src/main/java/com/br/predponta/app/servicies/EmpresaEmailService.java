@@ -77,7 +77,8 @@ public class EmpresaEmailService {
 	         entity.setEmeEmail(dto.getEmeEmail());
 	         entity.setEmeResponsavel(dto.getEmeResponsavel());
 			 			 
-			 // entity.setFalDescricao(dto.getFal_descricao());
+	         Empresa empresa = empresaRepository.getOne(dto.getEmpresaempCodigo());
+	         entity.setEmpresa(empresa);
 			
 			entity = repository.save(entity);
 						return new  EmpresaEmailDTO(entity);
