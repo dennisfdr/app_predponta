@@ -32,7 +32,7 @@ public class EmpresaEmailResources {
 	@Autowired
 	private EmpresaEmailService service;
 	
-	@ApiOperation(value="Busca todos os emails da EmpresaEmail")
+	@ApiOperation(value="Busca todos os emails da Empresa")
 	@GetMapping
 	public ResponseEntity<List<EmpresaEmailDTO>> findAll(){
 		List <EmpresaEmailDTO> list = service.findAll();
@@ -55,7 +55,7 @@ public class EmpresaEmailResources {
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva emeresa email")
+	@ApiOperation(value="Salva empresa email")
 	@PostMapping
 	public ResponseEntity<EmpresaEmailDTO> insert(@RequestBody EmpresaEmailDTO dto){
 		dto = service.insert (dto);
@@ -66,14 +66,14 @@ public class EmpresaEmailResources {
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@ApiOperation(value="Atualiza emeresa email")
+	@ApiOperation(value="Atualiza empresa email")
 	@PutMapping(value = "/{emeCodigo}")
 	public ResponseEntity<EmpresaEmailDTO> update(@PathVariable Integer emeCodigo,@RequestBody EmpresaEmailDTO dto){
 		dto = service.update (emeCodigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@ApiOperation(value="Deleta emeresa email")
+	@ApiOperation(value="Deleta empresa email")
 	@DeleteMapping(value = "/{emeCodigo}")
 	public ResponseEntity<Void> delete(@PathVariable Integer emeCodigo){
 		service.delete (emeCodigo);
