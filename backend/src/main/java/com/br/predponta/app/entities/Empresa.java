@@ -74,6 +74,12 @@ public class Empresa implements Serializable{
 //### Relacionamentos ###
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresa")
+    private List<ArquivoUpload> arquivoUpload;
+   
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresa")
+    private List<Setor> setor;
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "empresa")
     private List<EmpresaEmail> empresaEmail;    
     
 //    
@@ -185,6 +191,15 @@ public class Empresa implements Serializable{
 	public List<EmpresaEmail> getEmpresaEmail() {
 		return empresaEmail;
 	}	
+	
+	public List<ArquivoUpload> getArquivoUpload() {
+		return arquivoUpload;
+	}
+	
+	public List<Setor> getSetor() {
+		return setor;
+	}
+	
 
 //Generate hadsCode() and  equals()  somente do id;
 
