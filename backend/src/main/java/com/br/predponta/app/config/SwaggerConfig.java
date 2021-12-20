@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.RestController;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -45,7 +45,8 @@ public class SwaggerConfig {
 
     private ApiInfo metaInfo() {
 
-        ApiInfo apiInfo = new ApiInfo(
+        @SuppressWarnings("rawtypes")
+		ApiInfo apiInfo = new ApiInfo(
                 "Predpota API REST",
                 "API REST PredPonta.",
                 "1.0",

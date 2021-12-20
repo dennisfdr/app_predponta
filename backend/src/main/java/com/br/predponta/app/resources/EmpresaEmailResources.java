@@ -23,7 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value= "/empresaemails")
+@RequestMapping(value= "/emeresaemails")
 @Api(value="API REST EmpresaEmails")
 @CrossOrigin(origins = "*")
 
@@ -49,34 +49,34 @@ public class EmpresaEmailResources {
 	
 	
 	@ApiOperation(value="Busca email por ID")
-	@GetMapping(value = "/{empCodigo}")
-	public ResponseEntity<EmpresaEmailDTO> findById(@PathVariable Integer empCodigo){
-		EmpresaEmailDTO dto = service.findById(empCodigo);
+	@GetMapping(value = "/{emeCodigo}")
+	public ResponseEntity<EmpresaEmailDTO> findById(@PathVariable Integer emeCodigo){
+		EmpresaEmailDTO dto = service.findById(emeCodigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva empresa email")
+	@ApiOperation(value="Salva emeresa email")
 	@PostMapping
 	public ResponseEntity<EmpresaEmailDTO> insert(@RequestBody EmpresaEmailDTO dto){
 		dto = service.insert (dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{empCodigo}")
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{emeCodigo}")
 				
 				.buildAndExpand(dto.getEmeCodigo()).toUri();
 		
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@ApiOperation(value="Atualiza empresa email")
-	@PutMapping(value = "/{empCodigo}")
-	public ResponseEntity<EmpresaEmailDTO> update(@PathVariable Integer empCodigo,@RequestBody EmpresaEmailDTO dto){
-		dto = service.update (empCodigo, dto);
+	@ApiOperation(value="Atualiza emeresa email")
+	@PutMapping(value = "/{emeCodigo}")
+	public ResponseEntity<EmpresaEmailDTO> update(@PathVariable Integer emeCodigo,@RequestBody EmpresaEmailDTO dto){
+		dto = service.update (emeCodigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@ApiOperation(value="Deleta empresa email")
-	@DeleteMapping(value = "/{empCodigo}")
-	public ResponseEntity<Void> delete(@PathVariable Integer empCodigo){
-		service.delete (empCodigo);
+	@ApiOperation(value="Deleta emeresa email")
+	@DeleteMapping(value = "/{emeCodigo}")
+	public ResponseEntity<Void> delete(@PathVariable Integer emeCodigo){
+		service.delete (emeCodigo);
 		return ResponseEntity.noContent().build();
 	}
 	
