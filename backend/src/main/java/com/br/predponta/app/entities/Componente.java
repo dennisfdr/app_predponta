@@ -48,6 +48,9 @@ public class Componente implements Serializable{
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "componente")
     private List<HistoricoComponente> historicoComponente;
     
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "componente")
+    private List<StatusSubComponente> statusSubComponente;
+    
 //    
     
   
