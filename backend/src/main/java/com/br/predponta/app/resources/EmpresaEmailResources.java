@@ -23,7 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 @RestController
-@RequestMapping(value= "/emeresaemails")
+@RequestMapping(value= "/empresaemails")
 @Api(value="API REST EmpresaEmails")
 @CrossOrigin(origins = "*")
 
