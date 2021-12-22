@@ -86,7 +86,9 @@ public class Medicao implements Serializable{
 	public void setComponente(Componente componente) {
 		this.componente = componente;
 	}
-
+	
+//Generate hadsCode() and  equals()  somente do id;
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -94,8 +96,6 @@ public class Medicao implements Serializable{
 		result = prime * result + ((medCodigo == null) ? 0 : medCodigo.hashCode());
 		return result;
 	}
-
-//Generate hadsCode() and  equals()  somente do id;
 
 	@Override
 	public boolean equals(Object obj) {
