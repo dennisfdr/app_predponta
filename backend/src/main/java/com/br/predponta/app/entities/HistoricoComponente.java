@@ -24,7 +24,6 @@ public class HistoricoComponente implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 		
     @Basic(optional = false)
-    @NotNull
     @Column(name = "hco_codigo")
     private long hcoCodigo;
     @Basic(optional = false)
