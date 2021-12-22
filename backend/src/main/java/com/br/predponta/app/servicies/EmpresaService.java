@@ -43,8 +43,8 @@ public class EmpresaService {
     }
 	
 	@Transactional (readOnly = true)
-	public  EmpresaDTO findById(Integer emCodigo) {
-		Optional< Empresa> obj = repository.findById(emCodigo);
+	public  EmpresaDTO findById(Integer empCodigo) {
+		Optional< Empresa> obj = repository.findById(empCodigo);
 		 Empresa entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return new  EmpresaDTO(entity);
 	}
@@ -72,9 +72,9 @@ public class EmpresaService {
 	}
 	
 	@Transactional
-	public  EmpresaDTO update(Integer emCodigo,  EmpresaDTO dto) {
+	public  EmpresaDTO update(Integer empCodigo,  EmpresaDTO dto) {
 		try {
-			 Empresa entity = repository.getOne(emCodigo);
+			 Empresa entity = repository.getOne(empCodigo);
 			 
 			 entity.setEmpCodigo(dto.getEmpCodigo());
 			 entity.setEmpNome(dto.getEmpNome());
@@ -93,13 +93,13 @@ public class EmpresaService {
 						return new  EmpresaDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
-		throw new  ResourceNotFoundException("Id not Found" + emCodigo);
+		throw new  ResourceNotFoundException("Id not Found" + empCodigo);
 		}
 	}
 
-	public void delete(Integer emCodigo) {
+	public void delete(Integer empCodigo) {
 		try {
-		repository.deleteById(emCodigo);
+		repository.deleteById(empCodigo);
 		}
 		catch(EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException ("Id Not Found Exception");

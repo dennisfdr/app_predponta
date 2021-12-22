@@ -47,8 +47,8 @@ public class HistoricoComponenteService {
     }
 	
 	@Transactional (readOnly = true)
-	public  HistoricoComponenteDTO findById(Integer comCodigo) {
-		Optional< HistoricoComponente> obj = repository.findById(comCodigo);
+	public  HistoricoComponenteDTO findById(Integer hcoCodigo) {
+		Optional< HistoricoComponente> obj = repository.findById(hcoCodigo);
 		 HistoricoComponente entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return new  HistoricoComponenteDTO(entity);
 	}
@@ -69,9 +69,9 @@ public class HistoricoComponenteService {
 	}
 	
 	@Transactional
-	public  HistoricoComponenteDTO update(Integer comCodigo,  HistoricoComponenteDTO dto) {
+	public  HistoricoComponenteDTO update(Integer hcoCodigo,  HistoricoComponenteDTO dto) {
 		try {
-			 HistoricoComponente entity = repository.getOne(comCodigo);
+			 HistoricoComponente entity = repository.getOne(hcoCodigo);
 			 
 	         entity.setHcoCodigo(dto.getHcoCodigo());
 	         entity.setHcoObservacao(dto.getHcoObservacao());
@@ -84,13 +84,13 @@ public class HistoricoComponenteService {
 					return new  HistoricoComponenteDTO(entity);
 		}
 		catch(EntityNotFoundException e) {
-		throw new  ResourceNotFoundException("Id not Found" + comCodigo);
+		throw new  ResourceNotFoundException("Id not Found" + hcoCodigo);
 		}
 	}
 
-	public void delete(Integer comCodigo) {
+	public void delete(Integer hcoCodigo) {
 		try {
-		repository.deleteById(comCodigo);
+		repository.deleteById(hcoCodigo);
 		}
 		catch(EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException ("Id Not Found Exception");

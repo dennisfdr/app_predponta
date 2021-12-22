@@ -43,8 +43,8 @@ public class EquipamentoService {
 	}
 
 	@Transactional(readOnly = true)
-	public EquipamentoDTO findById(Integer aruCodigo) {
-		Optional<Equipamento> obj = repository.findById(aruCodigo);
+	public EquipamentoDTO findById(Integer equCodigo) {
+		Optional<Equipamento> obj = repository.findById(equCodigo);
 		Equipamento entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
 		return new EquipamentoDTO(entity);
 	}
@@ -72,9 +72,9 @@ public class EquipamentoService {
 	}
 
 	@Transactional
-	public EquipamentoDTO update(Integer aruCodigo, EquipamentoDTO dto) {
+	public EquipamentoDTO update(Integer equCodigo, EquipamentoDTO dto) {
 		try {
-			Equipamento entity = repository.getOne(aruCodigo);
+			Equipamento entity = repository.getOne(equCodigo);
 
 			entity.setEquCodigo(dto.getEquCodigo());
 			entity.setEquDescricao(dto.getEquDescricao());
@@ -93,13 +93,13 @@ public class EquipamentoService {
 			entity = repository.save(entity);
 			return new EquipamentoDTO(entity);
 		} catch (EntityNotFoundException e) {
-			throw new ResourceNotFoundException("Id not Found" + aruCodigo);
+			throw new ResourceNotFoundException("Id not Found" + equCodigo);
 		}
 	}
 
-	public void delete(Integer aruCodigo) {
+	public void delete(Integer equCodigo) {
 		try {
-			repository.deleteById(aruCodigo);
+			repository.deleteById(equCodigo);
 		} catch (EmptyResultDataAccessException e) {
 			throw new ResourceNotFoundException("Id Not Found Exception");
 		} catch (DataIntegrityViolationException e) {
