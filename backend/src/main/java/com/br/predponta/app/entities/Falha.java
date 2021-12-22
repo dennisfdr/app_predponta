@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -19,6 +21,7 @@ public class Falha implements Serializable{
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     @Basic(optional = false)
     @Column(name = "fal_codigo")
     private Integer falCodigo;
@@ -28,20 +31,25 @@ public class Falha implements Serializable{
     @Column(name = "fal_descricao")
     private String falDescricao;
     
-/*    @JoinColumn(name = "relatorio_intervencao_ri_codigo", referencedColumnName = "ri_codigo")
+//### Relacionamentos ### 
+    
+    @JoinColumn(name = "relatorio_intervencao_ri_codigo", referencedColumnName = "ri_codigo")
     @ManyToOne(optional = false)
-    private RelatorioIntervencao relatorioIntervencaoRiCodigo;
-*/	
+    private RelatorioIntervencao relatorioIntervencao;
+    
 	public Falha () {
 			}
 
-	public Falha(Integer falCodigo, @NotNull @Size(min = 1, max = 80) String falDescricao) {
+	public Falha(Integer falCodigo, @NotNull @Size(min = 1, max = 80) String falDescricao, RelatorioIntervencao relatorioIntervencao) {
 		super();
 
         this.falCodigo = falCodigo;
         this.falDescricao = falDescricao;
 		
+        this.relatorioIntervencao = relatorioIntervencao;
 	}
+	
+//Generate Getters and Setters;
 
 	public Integer getFalCodigo() {
 		return falCodigo;
@@ -59,7 +67,15 @@ public class Falha implements Serializable{
 		this.falDescricao = falDescricao;
 	}
 
+	public RelatorioIntervencao getRelatorioIntervencao() {
+		return relatorioIntervencao;
+	}
 
+	public void setRelatorioIntervencao(RelatorioIntervencao relatorioIntervencao) {
+		this.relatorioIntervencao = relatorioIntervencao;
+	}
+	
+//Generate Getters and Setters;
 
 	@Override
 	public int hashCode() {
@@ -85,6 +101,5 @@ public class Falha implements Serializable{
 			return false;
 		return true;
 	}
-
 
 }

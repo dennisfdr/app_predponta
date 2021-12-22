@@ -15,74 +15,79 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.br.predponta.app.dto.FalhaDTO;
+import com.br.predponta.app.entities.RelatorioIntervencao;
 import com.br.predponta.app.entities.Falha;
 import com.br.predponta.app.repositories.FalhaRepository;
-
+import com.br.predponta.app.repositories.RelatorioIntervencaoRepository;
 import com.br.predponta.app.servicies.exceptions.DataBaseException;
 import com.br.predponta.app.servicies.exceptions.ResourceNotFoundException;
 
-
 @Service
 public class FalhaService {
-	
-	
+
 	@Autowired
-	private  FalhaRepository repository;
-	
-	@Transactional (readOnly= true)
-	public List < FalhaDTO> findAll(){
-		List< Falha> list =repository.findAll();
-		return list.stream().map(x -> new  FalhaDTO(x)).collect(Collectors.toList());
-	}
-	
-	
-	
-	@Transactional (readOnly = true)
-    public Page< FalhaDTO> findAllPaged(Pageable pageable){
-        Page < Falha> list=repository.findAll(pageable);
-        return list.map(x -> new  FalhaDTO(x));
-    }
+	private FalhaRepository repository;
+	@Autowired
+	private RelatorioIntervencaoRepository relatorioIntervencaoRepository;
 
-	
-	@Transactional (readOnly = true)
-	public  FalhaDTO findById(Long fal_codigo) {
-		Optional< Falha> obj = repository.findById(fal_codigo);
-		 Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
-		return new  FalhaDTO(entity);
+	@Transactional(readOnly = true)
+	public List<FalhaDTO> findAll() {
+		List<Falha> list = repository.findAll();
+		return list.stream().map(x -> new FalhaDTO(x)).collect(Collectors.toList());
 	}
-	
+
+	@Transactional(readOnly = true)
+	public Page<FalhaDTO> findAllPaged(Pageable pageable) {
+		Page<Falha> list = repository.findAll(pageable);
+		return list.map(x -> new FalhaDTO(x));
+	}
+
+	@Transactional(readOnly = true)
+	public FalhaDTO findById(Integer falCodigo) {
+		Optional<Falha> obj = repository.findById(falCodigo);
+		Falha entity = obj.orElseThrow(() -> new ResourceNotFoundException("Entity not found"));
+		return new FalhaDTO(entity);
+	}
+
 	@Transactional
-	public  FalhaDTO insert( FalhaDTO dto) {
-		 Falha entity = new  Falha();
-		entity.setFalDescricao(dto.getFal_descricao());
+	public FalhaDTO insert(FalhaDTO dto) {
+		Falha entity = new Falha();
+
+		entity.setFalCodigo(dto.getFalCodigo());
+		entity.setFalDescricao(dto.getFalDescricao());
+
+		RelatorioIntervencao relatorioIntervencao = relatorioIntervencaoRepository.getOne(dto.getRelatorioIntervencaoriCodigo());
+		entity.setRelatorioIntervencao(relatorioIntervencao);
+
 		entity = repository.save(entity);
-		return new  FalhaDTO(entity);	
+		return new FalhaDTO(entity);
 	}
-	
+
 	@Transactional
-	public  FalhaDTO update(Long fal_codigo,  FalhaDTO dto) {
+	public FalhaDTO update(Integer falCodigo, FalhaDTO dto) {
 		try {
-			 Falha entity = repository.getOne(fal_codigo);
-			entity.setFalDescricao(dto.getFal_descricao());
+			Falha entity = repository.getOne(falCodigo);
+
+			entity.setFalCodigo(dto.getFalCodigo());
+			entity.setFalDescricao(dto.getFalDescricao());
+			
+			RelatorioIntervencao relatorioIntervencao = relatorioIntervencaoRepository.getOne(dto.getRelatorioIntervencaoriCodigo());
+			entity.setRelatorioIntervencao(relatorioIntervencao);
+
 			entity = repository.save(entity);
-			return new  FalhaDTO(entity);
-		}
-		catch(EntityNotFoundException e) {
-		throw new  ResourceNotFoundException("Id not Found" + fal_codigo);
+			return new FalhaDTO(entity);
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Id not Found" + falCodigo);
 		}
 	}
 
-	public void delete(Long fal_codigo) {
+	public void delete(Integer falCodigo) {
 		try {
-		repository.deleteById(fal_codigo);
-		}
-		catch(EmptyResultDataAccessException e) {
-			throw new ResourceNotFoundException ("Id Not Found Exception");
-		}
-		catch (DataIntegrityViolationException e) {
+			repository.deleteById(falCodigo);
+		} catch (EmptyResultDataAccessException e) {
+			throw new ResourceNotFoundException("Id Not Found Exception");
+		} catch (DataIntegrityViolationException e) {
 			throw new DataBaseException("Integity Violation");
 		}
 	}
-
 }
-

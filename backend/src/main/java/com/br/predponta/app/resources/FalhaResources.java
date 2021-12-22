@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-
 import com.br.predponta.app.dto.FalhaDTO;
 import com.br.predponta.app.servicies.FalhaService;
 
@@ -33,7 +32,7 @@ public class FalhaResources {
 	@Autowired
 	private FalhaService service;
 	
-	@ApiOperation(value="Busca todas as vibrações falhas")
+	@ApiOperation(value="Busca todos os Falhas")
 	@GetMapping
 	public ResponseEntity<List<FalhaDTO>> findAll(){
 		List <FalhaDTO> list = service.findAll();
@@ -49,35 +48,35 @@ public class FalhaResources {
     //    }
 	
 	
-	@ApiOperation(value="Busca falha por ID")
-	@GetMapping(value = "/{fal_codigo}")
-	public ResponseEntity<FalhaDTO> findById(@PathVariable Long fal_codigo){
-		FalhaDTO dto = service.findById(fal_codigo);
+	@ApiOperation(value="Busca Falha por ID")
+	@GetMapping(value = "/{falCodigo}")
+	public ResponseEntity<FalhaDTO> findById(@PathVariable Integer falCodigo){
+		FalhaDTO dto = service.findById(falCodigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva falha")
+	@ApiOperation(value="Salva Falha")
 	@PostMapping
 	public ResponseEntity<FalhaDTO> insert(@RequestBody FalhaDTO dto){
 		dto = service.insert (dto);
-		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{fal_codigo}")
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{falCodigo}")
 				
-				.buildAndExpand(dto.getFal_codigo()).toUri();
+				.buildAndExpand(dto.getFalCodigo()).toUri();
 		
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@ApiOperation(value="Atualiza falha")
-	@PutMapping(value = "/{fal_codigo}")
-	public ResponseEntity<FalhaDTO> update(@PathVariable Long fal_codigo,@RequestBody FalhaDTO dto){
-		dto = service.update (fal_codigo, dto);
+	@ApiOperation(value="Atualiza Falha")
+	@PutMapping(value = "/{falCodigo}")
+	public ResponseEntity<FalhaDTO> update(@PathVariable Integer falCodigo,@RequestBody FalhaDTO dto){
+		dto = service.update (falCodigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@ApiOperation(value="Deleta falha")
-	@DeleteMapping(value = "/{fal_codigo}")
-	public ResponseEntity<Void> delete(@PathVariable Long fal_codigo){
-		service.delete (fal_codigo);
+	@ApiOperation(value="Deleta Falha")
+	@DeleteMapping(value = "/{falCodigo}")
+	public ResponseEntity<Void> delete(@PathVariable Integer falCodigo){
+		service.delete (falCodigo);
 		return ResponseEntity.noContent().build();
 	}
 	

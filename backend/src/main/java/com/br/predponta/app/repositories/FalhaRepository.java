@@ -8,6 +8,6 @@ import com.br.predponta.app.entities.Falha;
 
 
 @Repository
-public interface FalhaRepository  extends JpaRepository <Falha, Long>{
+public interface FalhaRepository  extends JpaRepository <Falha, Integer>{
 
 }

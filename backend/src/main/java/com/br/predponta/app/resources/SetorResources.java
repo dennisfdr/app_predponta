@@ -32,7 +32,7 @@ public class SetorResources {
 	@Autowired
 	private SetorService service;
 	
-	@ApiOperation(value="Busca todos os Arquivo Upload")
+	@ApiOperation(value="Busca todos os Setores")
 	@GetMapping
 	public ResponseEntity<List<SetorDTO>> findAll(){
 		List <SetorDTO> list = service.findAll();
@@ -48,14 +48,14 @@ public class SetorResources {
     //    }
 	
 	
-	@ApiOperation(value="Busca Arquivos Upload por ID")
+	@ApiOperation(value="Busca Setor por ID")
 	@GetMapping(value = "/{setCodigo}")
 	public ResponseEntity<SetorDTO> findById(@PathVariable Integer setCodigo){
 		SetorDTO dto = service.findById(setCodigo);
 			return ResponseEntity.ok().body(dto);	
 	}
 	
-	@ApiOperation(value="Salva Arquivo Upload")
+	@ApiOperation(value="Salva Setor")
 	@PostMapping
 	public ResponseEntity<SetorDTO> insert(@RequestBody SetorDTO dto){
 		dto = service.insert (dto);
@@ -66,14 +66,14 @@ public class SetorResources {
 				return ResponseEntity.created(uri).body(dto);
 	}
 	
-	@ApiOperation(value="Atualiza Arquivo Upload")
+	@ApiOperation(value="Atualiza Setor")
 	@PutMapping(value = "/{setCodigo}")
 	public ResponseEntity<SetorDTO> update(@PathVariable Integer setCodigo,@RequestBody SetorDTO dto){
 		dto = service.update (setCodigo, dto);
 		return ResponseEntity.ok().body(dto);
 	}			
 	
-	@ApiOperation(value="Deleta Arquivo Upload")
+	@ApiOperation(value="Deleta Setor")
 	@DeleteMapping(value = "/{setCodigo}")
 	public ResponseEntity<Void> delete(@PathVariable Integer setCodigo){
 		service.delete (setCodigo);
