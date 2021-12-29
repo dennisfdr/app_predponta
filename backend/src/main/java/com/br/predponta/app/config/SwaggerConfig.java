@@ -47,7 +47,7 @@ public class SwaggerConfig {
 
         @SuppressWarnings("rawtypes")
 		ApiInfo apiInfo = new ApiInfo(
-                "Predpota API REST",
+                "Predponta API REST",
                 "API REST PredPonta.",
                 "1.0",
                 "Terms of Service",
