@@ -48,10 +48,9 @@ function App() {
     const { data: result, error } = useSWR<AxiosResponse<Empresa[]>>
     ('/empresas', url => httpClient.get(url) )
 
-    const [ lista, setLista ] = useState<Empresa[]>([])
-
+    
     useEffect( () => {
-        setLista(result?.data || [])
+        setEmpresas(result?.data || [])
     }, [result])
 
 
@@ -65,7 +64,7 @@ function App() {
     }, []);*/
 
     const formatCurrency = (value: number) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        return value.toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
     }
 
     const openNew = () => {
@@ -87,8 +86,17 @@ function App() {
         setDeleteEmpresasDialog(false);
     }
 
+
+    const salvar = (empresa: Empresa) => {
+        service.salvar(empresa).then(response =>{
+          
+        })
+    }
+
+
     const saveEmpresa = () => {
         setSubmitted(true);
+        salvar(empresa);
 
         if (empresa.empNome?.trim()) {
             let _empresas = [...empresas];
@@ -119,13 +127,19 @@ function App() {
         setEmpresa(empresa);
         setDeleteEmpresaDialog(true);
     }
+    const deletar = (empresa: Empresa) => {
+        service.deletar(empresa.empCodigo).then(response =>{
+            let _empresas = empresas.filter(val => val.empCodigo !== empresa.empCodigo);
+            setEmpresas(_empresas);
+            setDeleteEmpresaDialog(false);
+            setEmpresa(emptyEmpresa);
+            toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Empresa Deleted', life: 3000 });
+            })
+    }
+
 
     const deleteEmpresa = () => {
-        let _empresas = empresas.filter(val => val.empCodigo !== empresa.empCodigo);
-        setEmpresas(_empresas);
-        setDeleteEmpresaDialog(false);
-        setEmpresa(emptyEmpresa);
-        toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Empresa Deleted', life: 3000 });
+       deletar(empresa);        
     }
 
     const findIndexById = (empCodigo: string) => {
@@ -268,15 +282,15 @@ function App() {
 
             <div className="text-3xl text-800 font-bold mb-4">EMPRESAS</div>
 
-            <DataTable ref={dt} value={lista} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}
-                dataKey="id" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+            <DataTable ref={dt} value={empresas} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}
+                dataKey="empCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} empresas"
                 globalFilter={globalFilter} header={header} responsiveLayout="scroll">
                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                 <Column field="empCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                 <Column field="empNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>
-                <Column field="empStatus" header="Category" sortable style={{ minWidth: '10rem' }}></Column>
+                <Column field="empStatus" header="Status" sortable style={{ minWidth: '10rem' }}></Column>
                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
             </DataTable>
 

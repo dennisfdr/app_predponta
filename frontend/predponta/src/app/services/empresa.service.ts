@@ -24,10 +24,22 @@ export const useEmpresaService = () => {
         return response.data;
     }
 
+    const deletar = async (empCodigo: any) : Promise<void> => {
+        const url: string = `${resourceURL}/${empCodigo}`
+        await httpClient.delete(url)
+    }
+
+    const listar = async () : Promise<Empresa[]> => {
+        const response: AxiosResponse<Empresa[]> = await httpClient.get(resourceURL)
+        return response.data
+    }
+
 
     return{
         salvar,
         atualizar,
-        carregar
+        carregar,
+        deletar,
+        listar
     }
 }
