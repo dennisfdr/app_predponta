@@ -22,6 +22,7 @@ public class EmpresaDTO implements Serializable{
     private Date empProxMedicaoIt;
     private Date empProxMedicaoRi;
     private Date empProxMedicaoMca;
+    private Date createdAt;
 	
 			
 		public EmpresaDTO () {
@@ -41,6 +42,8 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoIt = empProxMedicaoIt;
 			this.empProxMedicaoRi = empProxMedicaoRi;
 			this.empProxMedicaoMca = empProxMedicaoMca;
+			
+			
 					
 			
 		}
@@ -140,6 +143,8 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoMca = empProxMedicaoMca;
 		}
 
-
+		public Date getCreatedAt() {
+			return createdAt;
+		}
 		
 }

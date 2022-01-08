@@ -1,6 +1,7 @@
 package com.br.predponta.app.entities;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -37,39 +40,45 @@ public class Empresa implements Serializable{
     @Column(name = "emp_nome")
     private String empNome;
     @Basic(optional = false)
-    @NotNull
+   // @NotNull
     @Column(name = "emp_status")
     private int empStatus;
     @Size(max = 90)
     @Column(name = "emp_logo")
     private String empLogo;
     @Basic(optional = false)
-    @NotNull
+   // @NotNull
     @Column(name = "emp_periodicidade_it")
     private int empPeriodicidadeIt;
     @Basic(optional = false)
-    @NotNull
+  //  @NotNull
     @Column(name = "emp_periodicidade_ri")
     private int empPeriodicidadeRi;
     @Basic(optional = false)
-    @NotNull
+   // @NotNull
     @Column(name = "emp_periodicidade_mca")
     private int empPeriodicidadeMca;
     @Basic(optional = false)
-    @NotNull
+  //  @NotNull
     @Column(name = "emp_prox_medicao_it")
     @Temporal(TemporalType.DATE)
     private Date empProxMedicaoIt;
     @Basic(optional = false)
-    @NotNull
+   // @NotNull
     @Column(name = "emp_prox_medicao_ri")
     @Temporal(TemporalType.DATE)
     private Date empProxMedicaoRi;
     @Basic(optional = false)
-    @NotNull
+  //  @NotNull
     @Column(name = "emp_prox_medicao_mca")
     @Temporal(TemporalType.DATE)
     private Date empProxMedicaoMca;
+    
+    @Column(columnDefinition = "TIMESTAMP WIHOUT TIME ZONE")
+    private Instant createdAt;
+    
+    @Column(columnDefinition = "TIMESTAMP WIHOUT TIME ZONE")
+    private Instant updateAt;
     
 //### Relacionamentos ###
     
@@ -200,9 +209,27 @@ public class Empresa implements Serializable{
 		return setor;
 	}
 	
+	public Instant getCreatedAt() {
+		return createdAt;
+	}
+
+	public Instant getUpdateAt() {
+		return updateAt;
+	}
+
+	@PrePersist
+	public void prePersist() {
+		createdAt = Instant.now();
+	}
+	
+	@PreUpdate
+	public void preUpdate() {
+		updateAt = Instant.now();
+	}
+	
 
 //Generate hadsCode() and  equals()  somente do id;
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
