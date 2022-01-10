@@ -24,13 +24,14 @@ public class EmpresaDTO implements Serializable{
     private Date empProxMedicaoRi;
     private Date empProxMedicaoMca;
     private Instant createdAt;
+    private Instant updateAt;
 	
 			
 		public EmpresaDTO () {
 			
 		}
 
-		public EmpresaDTO(Integer empCodigo, String empNome, int empStatus, String empLogo, int empPeriodicidadeIt, int empPeriodicidadeRi, int empPeriodicidadeMca, Date empProxMedicaoIt, Date empProxMedicaoRi, Date empProxMedicaoMca, Instant createdAt) {
+		public EmpresaDTO(Integer empCodigo, String empNome, int empStatus, String empLogo, int empPeriodicidadeIt, int empPeriodicidadeRi, int empPeriodicidadeMca, Date empProxMedicaoIt, Date empProxMedicaoRi, Date empProxMedicaoMca) {
 			
 						
 			this.empCodigo = empCodigo;
@@ -43,7 +44,7 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoIt = empProxMedicaoIt;
 			this.empProxMedicaoRi = empProxMedicaoRi;
 			this.empProxMedicaoMca = empProxMedicaoMca;
-			this.createdAt = createdAt;
+			
 			
 			
 					
@@ -63,6 +64,7 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoRi = entity.getEmpProxMedicaoRi();
 			this.empProxMedicaoMca = entity.getEmpProxMedicaoMca();
 			this.createdAt = entity.getCreatedAt();
+			this.updateAt = entity.getUpdateAt();
 					
 		}
 
@@ -149,5 +151,9 @@ public class EmpresaDTO implements Serializable{
 		public Instant getCreatedAt() {
 			return createdAt;
 		}
-		
+
+		public Instant getUpdateAt() {
+			return updateAt;
+		}
+
 }

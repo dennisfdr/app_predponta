@@ -96,7 +96,6 @@ public class Equipamento implements Serializable{
 		this.equNumeroCertificado = equNumeroCertificado;
 		this.equDataCalibracao = equDataCalibracao;
 		this.equProximaCalibracao = equProximaCalibracao;
-			
 		this.medicao = medicao;		
 	}
 	

@@ -38,7 +38,7 @@ function App() {
         empNome: '',
         empStatus: '',
         createdAt: '',
-        empProxMedicaoIt: new Date(),
+        empProxMedicaoIt: '',
         
     };
     const service = useEmpresaService()
@@ -52,6 +52,9 @@ function App() {
     const [globalFilter, setGlobalFilter] = useState<string>();
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable>(null);
+    var variavelData = new Date (); 
+
+    const [empProxMedicaoIt, setDate14] = useState<Date | Date[] | undefined>(undefined);
     
     const { data: result, error } = useSWR<AxiosResponse<Empresa[]>>
     ('/empresas', url => httpClient.get(url) )
@@ -104,6 +107,7 @@ function App() {
 
     const saveEmpresa = () => {
         setSubmitted(true);
+        onEmpProxMedicaoIt;
         salvar(empresa);
 
         if (empresa.empNome?.trim()) {
@@ -119,7 +123,8 @@ function App() {
                 _empresas.push(_empresa);
                 toast.current?.show({ severity: 'success', summary: 'Successful', detail: 'Empresa Created', life: 3000 });
             }
-
+            
+            console.log(empresa);
             setEmpresas(_empresas);
             setEmpresaDialog(false);
             setEmpresa(emptyEmpresa);
@@ -208,14 +213,16 @@ function App() {
 
         setEmpresa(_empresa);
     }
-    const onCreatedAtChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const val = (e.target && e.target.value) || '';
+
+    const onEmpProxMedicaoIt = (data:string) => {
+        console.log("data"+data, );
         let _empresa: Empresa = {...empresa};
-        _empresa.createdAt = val;
+        _empresa.empProxMedicaoIt = data;
 
         setEmpresa(_empresa);
     }
 
+    
    // const updateField = (data: Empresa, empProxMedicaoIt: string) => {
    //     setEmpresa({
    //       ...empresa,
@@ -225,13 +232,7 @@ function App() {
    //     console.log(empresa);
    //   };
 
-      const updateField = (data: any, field: string) => {
-        setEmpresa({
-          ...empresa,
-          [field]: data,
-        });
-    };
-
+  
     //const priceBodyTemplate = (rowData: Empresa) => {
     //    return (rowData.date !== undefined) ? formatCurrency(rowData.date): '';
     //}
@@ -349,12 +350,11 @@ function App() {
                     <InputText id="status" value={empresa.empStatus} onChange={(e) => onStatusChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empStatus })} />
                     {submitted && !empresa.empStatus && <small className="p-error">Status é requerido.</small>}
 
-                    <label htmlFor="createdAt">Data</label>
-                    <InputText id="createdAt" value={empresa.createdAt} onChange={(e) => onCreatedAtChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.createdAt })} />
-                    {submitted && !empresa.createdAt && <small className="p-error">Data é requerida.</small>}
-
                     <label htmlFor="empProxMedicaoIt">Prox Med It</label>
-                    <Calendar value={empresa.empProxMedicaoIt && new Date(empresa.empProxMedicaoIt + " ")} onChange={(e) =>updateField(e.target.value,"empProxMedicaoIt")}dateFormat="yy-mm-dd" />
+
+                    <Calendar id="empProxMedicaoIt" value={empProxMedicaoIt} onChange={(e) => (setDate14(e.value))} mask="99/99/9999"/>
+
+
             
                 </div>
         
