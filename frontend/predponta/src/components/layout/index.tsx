@@ -1,5 +1,9 @@
 import { ReactNode } from 'react';
 import { Menu } from './menu'
+import 'primereact/resources/themes/luna-amber/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
 
 interface LayoutProps {
   titulo?: string;

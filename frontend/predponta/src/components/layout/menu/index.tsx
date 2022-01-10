@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menubar } from 'primereact/menubar';
 import { InputText } from 'primereact/inputtext';
+import Router from 'next/router';
 
 
 export const Menu: React.FC = () => {
@@ -14,40 +15,30 @@ export const Menu: React.FC = () => {
 
 const items = [
    {
-      label:'Empresa',
+      label:'Cadastro',
       icon:'pi pi-fw pi-file',
       items:[
       
          {
-            label:'New',
-            icon:'pi pi-fw pi-plus',
-            items:[
-               {
-                  label:'Bookmark',
-                  icon:'pi pi-fw pi-bookmark'
-               },
-               {
-                  label:'Video',
-                  icon:'pi pi-fw pi-video'
-               },
-
-            ]
+            label:'Empresa',
+            icon:'pi pi-fw pi-home',
+            command:() => (Router.push("/cadastros/emp")),
          },
          {
-            label:'Delete',
+            label:'Usuário',
             icon:'pi pi-fw pi-trash'
          },
          {
             separator:true
          },
          {
-            label:'Export',
-            icon:'pi pi-fw pi-external-link'
+            label:'Técnico',
+            icon:'pi pi-fw pi-briefcase'
          }
       ]
    },
    {
-      label:'Edit',
+      label:'Termográfica',
       icon:'pi pi-fw pi-pencil',
       items:[
          {
@@ -70,7 +61,7 @@ const items = [
       ]
    },
    {
-      label:'Users',
+      label:'Vibração',
       icon:'pi pi-fw pi-user',
       items:[
          {
@@ -106,7 +97,7 @@ const items = [
       ]
    },
    {
-      label:'Events',
+      label:'Medições',
       icon:'pi pi-fw pi-calendar',
       items:[
          {
@@ -136,9 +127,44 @@ const items = [
          }
       ]
    },
+
+   {
+      label:'Análise de óleos',
+      icon:'pi pi-fw pi-calendar',
+      items:[
+         {
+            label:'Edit',
+            icon:'pi pi-fw pi-pencil',
+            items:[
+               {
+                  label:'Save',
+                  icon:'pi pi-fw pi-calendar-plus'
+               },
+               {
+                  label:'Delete',
+                  icon:'pi pi-fw pi-calendar-minus'
+               },
+
+            ]
+         },
+         {
+            label:'Archieve',
+            icon:'pi pi-fw pi-calendar-times',
+            items:[
+               {
+                  label:'Remove',
+                  icon:'pi pi-fw pi-calendar-minus'
+               }
+            ]
+         },      
+      ]
+   },
+
    {
       label:'Quit',
-      icon:'pi pi-fw pi-power-off'
+      icon:'pi pi-fw pi-power-off',
+      command:() => (Router.push("http://predponta.com.br/"))
+      
    }
 ];
 

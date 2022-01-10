@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, ChangeEvent, FormEvent } from 'reac
 import { classNames } from 'primereact/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import useSWR from 'swr'
+import useSWR from 'swr';
+import {Menu} from 'components/layout/menu';
 
 //import { getEmpresas } from '../../EmpresaService';
 
@@ -92,7 +93,6 @@ function App() {
           
         })
     }
-
 
     const saveEmpresa = () => {
         setSubmitted(true);
@@ -280,13 +280,17 @@ function App() {
         <div className="datatable-crud-demo surface-card p-4 border-round shadow-2">
             <Toast ref={toast} />
 
-            <div className="text-3xl text-800 font-bold mb-4">EMPRESAS</div>
+            <div className="text-3xl text-800 font-bold mb-4">
+            EMPRESAS
+            <Menu />
+                
+            </div>
 
             <DataTable ref={dt} value={empresas} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}
                 dataKey="empCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} empresas"
-                globalFilter={globalFilter} header={header} responsiveLayout="scroll">
+                globalFilter={globalFilter} header={header} responsiveLayout="stack">
                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                 <Column field="empCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                 <Column field="empNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>
@@ -301,20 +305,26 @@ function App() {
                     <InputText id="name" value={empresa.empNome} onChange={(e) => onNameChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empNome })} />
                     {submitted && !empresa.empNome && <small className="p-error">Nome é requerido.</small>}
                 </div>
+
+                <div className="field">
+                    <label htmlFor="status">Status da Empresa</label>
+                    <InputText id="status" value={empresa.empStatus} onChange={(e) => onNameChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empStatus })} />
+                    {submitted && !empresa.empStatus && <small className="p-error">Satus é requerido.</small>}
+                </div>
                
             </Dialog>
 
             <Dialog visible={deleteEmpresaDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteEmpresaDialogFooter} onHide={hideDeleteEmpresaDialog}>
                 <div className="flex align-items-center justify-content-center">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {empresa && <span>Are you sure you want to delete <b>{empresa.empNome}</b>?</span>}
+                    {empresa && <span> Tem certeza de que deseja excluir <b>{empresa.empNome}</b>?</span>}
                 </div>
             </Dialog>
 
             <Dialog visible={deleteEmpresasDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteEmpresasDialogFooter} onHide={hideDeleteEmpresasDialog}>
                 <div className="flex align-items-center justify-content-center">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {empresa && <span>Are you sure you want to delete the selected empresas?</span>}
+                    {empresa && <span>Tem certeza de que deseja excluir as empresas selecionadas?</span>}
                 </div>
             </Dialog>
         </div>
