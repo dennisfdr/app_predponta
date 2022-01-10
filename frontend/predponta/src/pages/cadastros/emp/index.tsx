@@ -4,15 +4,18 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import useSWR from 'swr';
 import {Menu} from 'components/layout/menu';
+import { Calendar } from 'primereact/calendar';
 
 //import { getEmpresas } from '../../EmpresaService';
 
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
 import { Rating } from 'primereact/rating';
+
 import { InputTextarea } from 'primereact/inputtextarea';
 import { RadioButton, RadioButtonChangeParams } from 'primereact/radiobutton';
 import { InputNumber, InputNumberChangeParams } from 'primereact/inputnumber';
+
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import 'primereact/resources/themes/luna-amber/theme.css';
@@ -27,12 +30,16 @@ import { httpClient } from 'app/http';
 import { AxiosResponse } from 'axios';
 
 
+
+
 function App() {
     let emptyEmpresa: Empresa = {
         empCodigo: '',
         empNome: '',
         empStatus: '',
         createdAt: '',
+        empProxMedicaoIt: new Date(),
+        
     };
     const service = useEmpresaService()
     const [empresas, setEmpresas] = useState<Empresa[]>([]);
@@ -45,7 +52,7 @@ function App() {
     const [globalFilter, setGlobalFilter] = useState<string>();
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable>(null);
-
+    
     const { data: result, error } = useSWR<AxiosResponse<Empresa[]>>
     ('/empresas', url => httpClient.get(url) )
 
@@ -65,8 +72,9 @@ function App() {
     }, []);*/
 
     const formatCurrency = (value: number) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+        return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
+
 
     const openNew = () => {
         setEmpresa(emptyEmpresa);
@@ -193,13 +201,41 @@ function App() {
         setEmpresa(_empresa);
     }
 
-    const onDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const onStatusChange = (e: ChangeEvent<HTMLInputElement>) => {
         const val = (e.target && e.target.value) || '';
         let _empresa: Empresa = {...empresa};
         _empresa.empStatus = val;
 
         setEmpresa(_empresa);
     }
+    const onCreatedAtChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const val = (e.target && e.target.value) || '';
+        let _empresa: Empresa = {...empresa};
+        _empresa.createdAt = val;
+
+        setEmpresa(_empresa);
+    }
+
+   // const updateField = (data: Empresa, empProxMedicaoIt: string) => {
+   //     setEmpresa({
+   //       ...empresa,
+   //       [empProxMedicaoIt]: data,
+   //     });
+    
+   //     console.log(empresa);
+   //   };
+
+      const updateField = (data: any, field: string) => {
+        setEmpresa({
+          ...empresa,
+          [field]: data,
+        });
+    };
+
+    //const priceBodyTemplate = (rowData: Empresa) => {
+    //    return (rowData.date !== undefined) ? formatCurrency(rowData.date): '';
+    //}
+ 
 
     /*const onPriceChange = (e: InputNumberChangeParams) => {
         const val = e.value || 0;
@@ -291,10 +327,14 @@ function App() {
                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} empresas"
                 globalFilter={globalFilter} header={header} responsiveLayout="stack">
+
                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                 <Column field="empCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                 <Column field="empNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>
                 <Column field="empStatus" header="Status" sortable style={{ minWidth: '10rem' }}></Column>
+                <Column field="createdAt" header="Data" sortable style={{ minWidth: '10rem' }}></Column>
+                <Column field="empProxMedicaoIt" header="Prox Med It" sortable style={{ minWidth: '10rem' }}></Column>
+                
                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
             </DataTable>
 
@@ -304,13 +344,20 @@ function App() {
                     <label htmlFor="name">Nome</label>
                     <InputText id="name" value={empresa.empNome} onChange={(e) => onNameChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empNome })} />
                     {submitted && !empresa.empNome && <small className="p-error">Nome é requerido.</small>}
-                </div>
 
-                <div className="field">
-                    <label htmlFor="status">Status da Empresa</label>
-                    <InputText id="status" value={empresa.empStatus} onChange={(e) => onNameChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empStatus })} />
-                    {submitted && !empresa.empStatus && <small className="p-error">Satus é requerido.</small>}
+                    <label htmlFor="status">Status</label>
+                    <InputText id="status" value={empresa.empStatus} onChange={(e) => onStatusChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.empStatus })} />
+                    {submitted && !empresa.empStatus && <small className="p-error">Status é requerido.</small>}
+
+                    <label htmlFor="createdAt">Data</label>
+                    <InputText id="createdAt" value={empresa.createdAt} onChange={(e) => onCreatedAtChange(e)} required autoFocus className={classNames({ 'p-invalid': submitted && !empresa.createdAt })} />
+                    {submitted && !empresa.createdAt && <small className="p-error">Data é requerida.</small>}
+
+                    <label htmlFor="empProxMedicaoIt">Prox Med It</label>
+                    <Calendar value={empresa.empProxMedicaoIt && new Date(empresa.empProxMedicaoIt + " ")} onChange={(e) =>updateField(e.target.value,"empProxMedicaoIt")}dateFormat="yy-mm-dd" />
+            
                 </div>
+        
                
             </Dialog>
 

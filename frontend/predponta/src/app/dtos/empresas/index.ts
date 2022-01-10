@@ -4,4 +4,6 @@ export interface Empresa {
     empNome?: string;
     empStatus?: string;
     createdAt?: string;
+    empProxMedicaoIt?:string;
+    
 }

@@ -1,6 +1,7 @@
 package com.br.predponta.app.dto;
 
 import java.io.Serializable;
+import java.time.Instant;
 import java.util.Date;
 
 
@@ -22,14 +23,14 @@ public class EmpresaDTO implements Serializable{
     private Date empProxMedicaoIt;
     private Date empProxMedicaoRi;
     private Date empProxMedicaoMca;
-    private Date createdAt;
+    private Instant createdAt;
 	
 			
 		public EmpresaDTO () {
 			
 		}
 
-		public EmpresaDTO(Integer empCodigo, String empNome, int empStatus, String empLogo, int empPeriodicidadeIt, int empPeriodicidadeRi, int empPeriodicidadeMca, Date empProxMedicaoIt, Date empProxMedicaoRi, Date empProxMedicaoMca) {
+		public EmpresaDTO(Integer empCodigo, String empNome, int empStatus, String empLogo, int empPeriodicidadeIt, int empPeriodicidadeRi, int empPeriodicidadeMca, Date empProxMedicaoIt, Date empProxMedicaoRi, Date empProxMedicaoMca, Instant createdAt) {
 			
 						
 			this.empCodigo = empCodigo;
@@ -42,6 +43,7 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoIt = empProxMedicaoIt;
 			this.empProxMedicaoRi = empProxMedicaoRi;
 			this.empProxMedicaoMca = empProxMedicaoMca;
+			this.createdAt = createdAt;
 			
 			
 					
@@ -60,6 +62,7 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoIt = entity.getEmpProxMedicaoIt();
 			this.empProxMedicaoRi = entity.getEmpProxMedicaoRi();
 			this.empProxMedicaoMca = entity.getEmpProxMedicaoMca();
+			this.createdAt = entity.getCreatedAt();
 					
 		}
 
@@ -143,7 +146,7 @@ public class EmpresaDTO implements Serializable{
 			this.empProxMedicaoMca = empProxMedicaoMca;
 		}
 
-		public Date getCreatedAt() {
+		public Instant getCreatedAt() {
 			return createdAt;
 		}
 		

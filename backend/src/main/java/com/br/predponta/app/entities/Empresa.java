@@ -222,6 +222,7 @@ public class Empresa implements Serializable{
 		createdAt = Instant.now();
 	}
 	
+	
 	@PreUpdate
 	public void preUpdate() {
 		updateAt = Instant.now();
