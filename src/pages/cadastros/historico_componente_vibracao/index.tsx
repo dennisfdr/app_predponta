@@ -1,0 +1,3 @@
+import { CadastroHistoricoComponenteVibracao } from 'components/historico_componente_vibracao/cadastro'
+
+export default CadastroHistoricoComponenteVibracao

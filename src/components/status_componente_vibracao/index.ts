@@ -1,0 +1,1 @@
+export { CadastroStatusComponenteVibracao } from './cadastro'

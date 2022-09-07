@@ -1,0 +1,1 @@
+export { CadastroMcaRelatorio } from './cadastro'

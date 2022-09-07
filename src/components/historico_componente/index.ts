@@ -1,0 +1,1 @@
+export { CadastroHistoricoComponente } from './cadastro'

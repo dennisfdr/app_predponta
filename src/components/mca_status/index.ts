@@ -1,0 +1,1 @@
+export { CadastroMcaStatus } from './cadastro'

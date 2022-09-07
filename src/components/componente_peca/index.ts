@@ -1,0 +1,1 @@
+export { CadastroComponentePeca } from './cadastro'

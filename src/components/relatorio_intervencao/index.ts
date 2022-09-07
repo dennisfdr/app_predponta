@@ -1,0 +1,1 @@
+export { CadastroRelatorioIntervencao } from './cadastro'

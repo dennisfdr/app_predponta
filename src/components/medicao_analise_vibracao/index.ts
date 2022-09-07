@@ -1,0 +1,1 @@
+export { CadastroMedicaoAnaliseVibracao } from './cadastro'

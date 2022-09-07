@@ -1,0 +1,1 @@
+export { CadastroMcaCircuito } from './cadastro'

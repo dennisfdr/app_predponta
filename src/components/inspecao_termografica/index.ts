@@ -1,0 +1,1 @@
+export { CadastroInspecaoTermografica } from './cadastro'

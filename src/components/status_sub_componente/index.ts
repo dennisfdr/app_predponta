@@ -1,0 +1,1 @@
+export { CadastroStatusSubComponente } from './cadastro'

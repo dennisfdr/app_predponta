@@ -1,0 +1,1 @@
+export { CadastroMcaMedicao } from './cadastro'
