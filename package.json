@@ -15,6 +15,7 @@
     "chart.js": "3.5.0",
     "final-form": "^4.20.6",
     "formik": "^2.2.9",
+    "gh": "^2.8.9",
     "hook-form": "^0.0.1",
     "logrocket": "^2.2.0",
     "moment": "^2.29.1",
