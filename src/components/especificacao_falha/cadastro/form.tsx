@@ -107,7 +107,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     const [ inspecaoTermograficaPeca, setInspecaoTermograficaPeca ] = useState<InspecaoTermograficaPeca>(null);
     const [ condicoesAmbiente, setCondicoesAmbiente ] = useState<CondicoesAmbiente>(null);
     const [ especificacaoFalha, setEspecificacaoFalha ] = useState<EspecificacaoFalha>(null);
-    const [ camCodigo, setCamCodigo ] = useState('');
+   
     
 
 
@@ -218,6 +218,9 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
     const editEntity = (especificacaoFalha: EspecificacaoFalha) => {
 
+        
+        carregaDados(especificacaoFalha)
+        
         /*Altera caption do botão para ALTERAR*/
         setMostraBotao(true);
 
@@ -229,21 +232,34 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
         formik.setFieldValue("efaExcessoTemperatura", especificacaoFalha.efaExcessoTemperatura)
         formik.setFieldValue("efaPrazoLimite", especificacaoFalha.efaPrazoLimite)
         formik.setFieldValue("efaPontoTermograma", especificacaoFalha.efaPontoTermograma)
+       
+       
+
+        
+            
+
+        
+
+        
+    }
+
+    const carregaDados= (especificacaoFalha: EspecificacaoFalha) => {
+
+        console.log(especificacaoFalha.condicoesAmbiente)
+
         setCondicoesAmbiente(especificacaoFalha.condicoesAmbiente)
-        setCamCodigo(condicoesAmbiente?.camCodigo)
-        console.log("Log1....", camCodigo)
+      
+        condicoesAmbienteService.carregar(condicoesAmbiente?.camCodigo).then(condicoesAmbiente => setCondicoesAmbiente(condicoesAmbiente))
+        setInspecaoTermograficaPeca(condicoesAmbiente?.inspecaoTermograficaPeca)
+        inspecaoTermograficaPecaService.carregar(inspecaoTermograficaPeca?.itpCodigo).then(inspecaoTermograficaPeca => setInspecaoTermograficaPeca(inspecaoTermograficaPeca))
+        setInspecaoTermografica(inspecaoTermograficaPeca?.inspecaoTermografica)
+        inspecaoTermograficaService.carregar(inspecaoTermografica?.iteCodigo).then(inspecaoTermografica => setInspecaoTermografica(inspecaoTermografica))
+        setMedicao(inspecaoTermografica?.medicao)
+        medicaoService.carregar(medicao?.medCodigo).then(medicao => setMedicao(medicao))
+        console.log("Medicao: " , medicao?.componente)
+        setComponente(medicao?.componente)
 
-        console.log("Log2....", especificacaoFalha.condicoesAmbiente)
 
-        
-            condicoesAmbienteService.carregar(camCodigo).then(condicoesAmbiente => setCondicoesAmbiente(condicoesAmbiente))
-            setInspecaoTermograficaPeca(condicoesAmbiente?.inspecaoTermograficaPeca)
-            inspecaoTermograficaPecaService.carregar(inspecaoTermograficaPeca?.itpCodigo).then(inspecaoTermograficaPeca => setInspecaoTermograficaPeca(inspecaoTermograficaPeca))
-            setInspecaoTermografica(inspecaoTermograficaPeca?.inspecaoTermografica)
-
-        
-
-        
     }
     
     const consultaEntity = (especificacaoFalha: EspecificacaoFalha) => {
@@ -392,11 +408,12 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                                 <label style={{ color: "white" }} htmlFor="componente">Componente: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={componente} 
+                                                    value={componente?.comCodigo} 
                                                     options={listaComponente} 
                                                     onChange={handleComponenteChange} 
                                                     optionLabel="comNome" 
-                                                    placeholder="Selecione o Componente" />
+                                                    placeholder="Selecione o Componente"
+                                                    editable={true}/>
 
                                             </div> 
 
@@ -404,11 +421,12 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                                 <label style={{ color: "white" }} htmlFor="medicao">Medicao: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={medicao} 
+                                                    value={medicao?.medCodigo} 
                                                     options={listaMedicao} 
                                                     onChange={handleMedicaoChange} 
                                                     optionLabel="medCodigo" 
-                                                    placeholder="Selecione a Medicao" />
+                                                    placeholder="Selecione a Medicao"
+                                                    editable={true}/>
 
                                             </div> 
 
