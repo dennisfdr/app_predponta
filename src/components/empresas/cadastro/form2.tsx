@@ -137,7 +137,9 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
         setEmpresas(result?.data || [])
     }, [result])*/
 
-    const todosEndpoint = "http://localhost:8080/empresas";
+    //const todosEndpoint = "http://localhost:8080/empresas";
+    const todosEndpoint = "http://207.244.238.40:14333/empresas";
+
 
     const [todos, setTodos] = React.useState([]);
     React.useEffect(() => {

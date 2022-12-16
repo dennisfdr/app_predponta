@@ -1,3 +1,4 @@
+<><meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests" /></>
 import type { AppProps } from 'next/app'
 import 'primereact/resources/themes/luna-amber/theme.css';         //theme
 import 'primereact/resources/primereact.min.css';                  //core css

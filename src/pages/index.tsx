@@ -1,3 +1,4 @@
+
 import Head from 'next/head'
 import {Menu} from 'components/layout/menu';
 
