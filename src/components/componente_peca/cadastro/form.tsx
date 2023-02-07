@@ -12,7 +12,8 @@ import {
     useEmpresaService, 
     useMaquinaService, 
     useMaquinaEquipamentoService, 
-    useComponenteService } from 'app/services'
+    useComponenteService,
+    useComponentePecaService } from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -87,6 +88,16 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
 
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<Componente_Peca[]>([]);
+    const [ entidade, setEntidade ] = useState<Componente_Peca>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useComponentePecaService();
+
     
 
     
@@ -98,34 +109,103 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
+    formik.setFieldValue("copCodigo", '')
+    formik.setFieldValue("copDescricao", '')
+    formik.setFieldValue("copSatatus", '') 
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
+}
 
-      
 
-    /*Carregando Historico Componentes*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<Componente_Peca[]>>
-    ('/componentepecas', url => httpClient.get(url) )
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
 
-    useEffect( () => {
-        setListaComponentePeca(result?.data || [])
-    }, [result])
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.copCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: Componente_Peca) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("copCodigo", entidade.copCodigo)
+    formik.setFieldValue("copDescricao", entidade.copDescricao)
+    formik.setFieldValue("copSatatus", entidade.copStatus) 
+    
+    
+}
+
+const consultaEntidade = (entidade: Componente_Peca) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<Componente_Peca>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -162,16 +242,31 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: Componente_Peca) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
 
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
+    }
     
 
 
@@ -222,7 +317,7 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Componente Peca:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                            <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -320,7 +415,7 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="copStatus">Status*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Status" id="copStatus" name="copStatus" value={formik.values.copStatus}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                                        <Checkbox inputId="copStatus" name="copStatus" checked={formik.values.copStatus} onChange={formik.handleChange} />
 
                                                     </span>
 
@@ -332,13 +427,17 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
                                            
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaComponentePeca} selection={selectedComponentePeca} onSelectionChange={(e) => setSelectedComponentePeca(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedComponentePeca} onSelectionChange={(e) => setSelectedComponentePeca(e.value)}
                                 dataKey="hcoCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -353,6 +452,42 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Historico-Componente" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                <div className="p-formgrid grid">
+                                    <div className="field col">
+                                        <label htmlFor="copCodigo">Código: </label>
+                                        <InputText id="copCodigo"  name="copCodigo" value={entidade?.copCodigo} disabled/>
+                                    </div>
+
+                                
+                    
+                                </div>
+                                
+                                <div className="p-formgrid grid">
+                                <div className="field col">
+                                    <label htmlFor="copDescricao">Descrição: </label>
+                                    <InputText id="copDescricao"  name="copDescricao" value={entidade?.copDescricao} disabled/>
+                                </div>
+
+                                <div className="p-checkbox-box">
+                                    <label htmlFor="copStatus">Ativo:  </label>
+                                    <Checkbox  inputId="copStatus" name="copStatus" value={entidade?.copStatus } icon/>   
+                                </div>
+
+                                </div>
+
+                                
+                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.copDescricao}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 

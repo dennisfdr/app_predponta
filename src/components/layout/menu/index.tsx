@@ -60,6 +60,26 @@ const items = [
 
                         },
 
+                        
+
+                        {
+                           label:'Componente Peça',
+                           icon:'pi pi-cog pi-align-right',
+                           command:() => (Router.push("/cadastros/componente_peca")),
+                        }, 
+         
+                        {
+                           label:'SubComponente',
+                           icon:'pi pi-clone pi-align-right',
+                           command:() => (Router.push("/cadastros/sub_componente")),
+                        },
+         
+                        {
+                           label:'CompSubComp',
+                           icon:'pi pi-sitemap pi-align-right',
+                           command:() => (Router.push("/cadastros/componente_subcomponente")),
+                        },
+
                         {
                            label:'Histórico Componentes',
                            icon:'pi pi-book pi-align-right',
@@ -70,29 +90,13 @@ const items = [
                            label:'Status Sub Componente',
                            icon:'pi pi-check pi-align-right',
                            command:() => (Router.push("/cadastros/status_sub_componente")),
-                        }
+                        },
 
 
                   ]
                },                 
 
-               {
-                  label:'Componente Peça',
-                  icon:'pi pi-cog pi-align-right',
-                  command:() => (Router.push("/cadastros/componente_peca")),
-               }, 
-
-               {
-                  label:'SubComponente',
-                  icon:'pi pi-clone pi-align-right',
-                  command:() => (Router.push("/cadastros/sub_componente")),
-               },
-
-               {
-                  label:'CompSubComp',
-                  icon:'pi pi-sitemap pi-align-right',
-                  command:() => (Router.push("/cadastros/componente_subcomponente")),
-               },
+               
 
             ]
          },

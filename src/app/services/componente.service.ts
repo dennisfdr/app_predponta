@@ -15,6 +15,7 @@ export const useComponenteService = () => {
    
 
     const salvar = async (componente: Componente) : Promise <Componente> => {
+        console.log(componente)
         const response : AxiosResponse <Componente> =  await httpClient.post<Componente>(resourceURL, componente)
         return response.data;
     }

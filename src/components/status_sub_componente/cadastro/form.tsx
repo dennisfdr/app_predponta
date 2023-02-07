@@ -12,7 +12,8 @@ import {
     useEmpresaService, 
     useMaquinaService, 
     useMaquinaEquipamentoService, 
-    useComponenteService } from 'app/services'
+    useComponenteService,
+    useStatusSubComponenteService } from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -87,6 +88,15 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
 
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<StatusSubComponente[]>([]);
+    const [ entidade, setEntidade ] = useState<StatusSubComponente>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useStatusSubComponenteService();
+
     
 
     
@@ -98,34 +108,105 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
+    formik.setFieldValue("sscCodigo", '')
+    formik.setFieldValue("sscDescricao", '')
+    formik.setFieldValue("sscCor", '')  
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
+}
 
-      
 
-    /*Carregando Historico Componentes*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<StatusSubComponente[]>>
-    ('/statussubcomponentes', url => httpClient.get(url) )
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
 
-    useEffect( () => {
-        setListaStatusSubComponente(result?.data || [])
-    }, [result])
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            console.log(response);
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.sscCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: StatusSubComponente) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("sscCodigo", entidade.sscCodigo)
+    formik.setFieldValue("sscDescricao", entidade.sscDescricao)
+    formik.setFieldValue("sscCor", entidade.sscCor) 
+    
+    
+}
+
+const consultaEntidade = (entidade: StatusSubComponente) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<StatusSubComponente>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
+
 
     
 
@@ -162,16 +243,31 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: StatusSubComponente) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
 
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
+    }
     
 
 
@@ -222,7 +318,7 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Status de Sub Componente:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                                <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -332,13 +428,17 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
                                            
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaStatusSubComponente} selection={selectedSatatusSubComponente} onSelectionChange={(e) => setSelectedStatusSubComponente(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedSatatusSubComponente} onSelectionChange={(e) => setSelectedStatusSubComponente(e.value)}
                                 dataKey="hcoCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -353,6 +453,42 @@ export const StatusSubComponenteForm: React.FC<StatusSubComponenteFormProps> = (
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Status Sub-Componente" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                <div className="p-formgrid grid">
+                                    <div className="field col">
+                                        <label htmlFor="sscCodigo">Código: </label>
+                                        <InputText id="sscCodigo"  name="sscCodigo" value={entidade?.sscCodigo} disabled/>
+                                    </div>
+
+                                
+                    
+                                </div>
+                                
+                                <div className="p-formgrid grid">
+                                <div className="field col">
+                                    <label htmlFor="sscDescricao">Descrição: </label>
+                                    <InputText id="sscDescricao"  name="sscDescricao" value={entidade?.sscDescricao} disabled/>
+                                </div>
+
+                                <div className="p-checkbox-box">
+                                    <label htmlFor="sscCor">Cor:  </label>
+                                    <InputText  id="sscCor" name="sscCor" value={entidade?.sscCor } disabled/>   
+                                </div>
+
+                                </div>
+
+                                
+                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.sscDescricao}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 

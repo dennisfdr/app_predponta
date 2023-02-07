@@ -12,7 +12,10 @@ import {
     useEmpresaService, 
     useMaquinaService, 
     useMaquinaEquipamentoService, 
-    useComponenteService } from 'app/services'
+    useComponenteService,
+    useHistoricoComponenteService 
+    
+} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -61,6 +64,9 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
     const maquinaEquipamentoService = useMaquinaEquipamentoService();
     const componenteService = useComponenteService();
     
+    
+    
+    
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
     const [ maquina, setMaquina ] = useState<Maquina>(null);
@@ -69,7 +75,7 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
     const [ listaMaquina, setListaMaquina ] = useState<Maquina[]>([]);
     const [ listaMaquinaEquipamento, setListaMaquinaEquipamento ] = useState<MaquinaEquipamento[]>([]);
     const [ listaComponente, setListaComponente ] = useState<Componente[]>([]);
-    const [ listaHistoricoComponente, setListaHistoricoComponente ] = useState<HistoricoComponente[]>([]);
+    
 
     const [ maquinaEquipamento, setMaquinaEquipamento ] = useState<MaquinaEquipamento>(null);
     const [ componente, setComponente ] = useState<Componente>(null);
@@ -86,6 +92,15 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
 
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<HistoricoComponente[]>([]);
+    const [ entidade, setEntidade ] = useState<HistoricoComponente>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useHistoricoComponenteService();
     
 
     
@@ -97,35 +112,104 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
+    formik.setFieldValue("hcoCodigo", '')
+    formik.setFieldValue("hcoObservacao", '')
+    formik.setFieldValue("hcoOrdemServico", '') 
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
+}
 
-      
 
-    /*Carregando Historico Componentes*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<HistoricoComponente[]>>
-    ('/historicocomponentes', url => httpClient.get(url) )
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
 
-    useEffect( () => {
-        setListaHistoricoComponente(result?.data || [])
-    }, [result])
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
 
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            console.log(response);
+            setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.hcoCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: HistoricoComponente) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("hcoCodigo", entidade.hcoCodigo)
+    formik.setFieldValue("hcoObservacao", entidade.hcoObservacao)
+    formik.setFieldValue("hcoOrdemServico", entidade.hcoOrdemServico) 
+    
+    
+}
+
+const consultaEntidade = (entidade: HistoricoComponente) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<HistoricoComponente>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
     
 
 
@@ -161,21 +245,39 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: HistoricoComponente) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
+    }
+
+
 
     
 
 
 
-
+    /*Métodos Carregar combos*/    
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
@@ -221,7 +323,7 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Histórico de Componentes:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                             <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -331,13 +433,17 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
                                            
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaHistoricoComponente} selection={selectedHistoricoComponentes} onSelectionChange={(e) => setSelectedHistoricoComponentes(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedHistoricoComponentes} onSelectionChange={(e) => setSelectedHistoricoComponentes(e.value)}
                                 dataKey="hcoCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -352,6 +458,42 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Historico-Componente" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                <div className="p-formgrid grid">
+                                    <div className="field col">
+                                        <label htmlFor="hcoCodigo">Código: </label>
+                                        <InputText id="hcoCodigo"  name="hcoCodigo" value={entidade?.hcoCodigo} disabled/>
+                                    </div>
+
+                                
+                    
+                                </div>
+                                
+                                <div className="p-formgrid grid">
+                                <div className="field col">
+                                    <label htmlFor="hcoObservacao">Nome</label>
+                                    <InputText id="hcoObservacao"  name="hcoObservacao" value={entidade?.hcoObservacao} disabled/>
+                                </div>
+
+                                <div className="p-checkbox-box">
+                                    <label htmlFor="hcoOrdemServico">Ativo:  </label>
+                                    <Checkbox  inputId="hcoOrdemServico" name="hcoOrdemServico" value={entidade?.hcoOrdemServico } icon/>   
+                                </div>
+
+                                </div>
+
+                                
+                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.hcoCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 
