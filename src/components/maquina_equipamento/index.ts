@@ -1,0 +1,1 @@
+export { CadastroMaquinaEquipamento } from './cadastro'

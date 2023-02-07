@@ -42,18 +42,39 @@ const items = [
                   icon:'pi pi-fw pi-align-left',
                   command:() => (Router.push("/cadastros/maquinas")),
                },
-               
+
                {
-                  label:'Histórico Componentes',
-                  icon:'pi pi-book pi-align-right',
-                  command:() => (Router.push("/cadastros/historico_componente")),
-               }, 
-               
+                  label:'Máquina-Equipamento',
+                  icon:'pi pi-fw pi-align-left',
+                  command:() => (Router.push("/cadastros/maquina_equipamento")),
+               },
+
                {
-                  label:'Status Sub Componente',
-                  icon:'pi pi-check pi-align-right',
-                  command:() => (Router.push("/cadastros/status_sub_componente")),
-               }, 
+                  label:'Componente',
+                  icon:'pi pi-fw pi-align-left',
+                  items: [
+                        {
+                           label:'Geral',
+                           icon:'pi pi-fw pi-align-left',
+                           command:() => (Router.push("/cadastros/componente")),  
+
+                        },
+
+                        {
+                           label:'Histórico Componentes',
+                           icon:'pi pi-book pi-align-right',
+                           command:() => (Router.push("/cadastros/historico_componente")),
+                        }, 
+
+                        {
+                           label:'Status Sub Componente',
+                           icon:'pi pi-check pi-align-right',
+                           command:() => (Router.push("/cadastros/status_sub_componente")),
+                        }
+
+
+                  ]
+               },                 
 
                {
                   label:'Componente Peça',

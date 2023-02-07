@@ -14,6 +14,7 @@ export const useMaquinaEquipamentoService = () => {
    
 
     const salvar = async (maquinaEquipamento: MaquinaEquipamento) : Promise <MaquinaEquipamento> => {
+        console.log(maquinaEquipamento)
         const response : AxiosResponse <MaquinaEquipamento> =  await httpClient.post<MaquinaEquipamento>(resourceURL, maquinaEquipamento)
         return response.data;
     }

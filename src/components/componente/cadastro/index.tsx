@@ -1,50 +1,51 @@
+import { Componente } from "app/model/componentes";
 import { Maquina } from "app/model/maquinas";
-import { useMaquinaService } from "app/services";
+import { useComponenteService } from "app/services";
 import { Alert } from "components/common/message";
 import { Menu } from "components/layout/menu";
 import { useRouter } from "next/router";
 import React from "react";
 import { useState } from "react";
-import { MaquinaForm } from "./form";
+import { ComponenteForm } from "./form";
 
 
 
-export const CadastroMaquina: React.FC = () => {
+export const CadastroComponente: React.FC = () => {
 
-    const service = useMaquinaService();
+    const service = useComponenteService();
     const [ messages, setMessages ] = useState<Alert[]>([])
     const [ vendaRealizada, setVendaRealizada ] = useState<boolean>(false)
-    const [ maquina, setMaquina ] = useState<Maquina>();
+    const [ componente, setComponente ] = useState<Componente>();
     
    
 
     const router = useRouter();
-    const { maqCodigo } = router.query;
+    const { comCodigo } = router.query;
 
    
 
     
 
     
-    const handleSubmit = (maquina: Maquina) => {     
+    const handleSubmit = (componente: Componente) => {     
 
           
-        if(maquina.maqCodigo){
+        if(componente.comCodigo){
            
-            service.atualizar(maquina).then(response => {
+            service.atualizar(componente).then(response => {
                 setMessages([{
-                    tipo: "success", texto: "Empresa atualizado com sucesso!"
+                    tipo: "success", texto: "Componente atualizado com sucesso!"
                 }])
                     
             })
         }  else {
             
-            service.salvar(maquina)
+            service.salvar(componente)
             
-                    .then(maquinaSalvo => {                       
-                        setMaquina(maquinaSalvo);                     
+                    .then(componenteSalvo => {                       
+                        setComponente(componenteSalvo);                     
                         setMessages([{
-                            tipo: "success", texto: "Maquina salvo com sucesso!"
+                            tipo: "success", texto: "Componente salvo com sucesso!"
                         }])
                         
                                         
@@ -57,7 +58,7 @@ export const CadastroMaquina: React.FC = () => {
         //<Layout titulo="Empresa">
         <React.Fragment>
             <Menu/>        
-            <MaquinaForm   onSubmit={handleSubmit}/>  
+            <ComponenteForm   onSubmit={handleSubmit}/>  
         </React.Fragment>
 
        //</Layout>

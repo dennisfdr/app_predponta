@@ -3,7 +3,7 @@ import { useCategoriaService } from "app/services";
 import { Alert } from "components/common/message";
 import { Menu } from "components/layout/menu";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { CategoriaForm } from "./form";
 
@@ -15,15 +15,20 @@ export const CadastroCategoria: React.FC = () => {
     const [ messages, setMessages ] = useState<Alert[]>([])
     const [ vendaRealizada, setVendaRealizada ] = useState<boolean>(false)
     const [ categoria, setCategoria ] = useState<Categoria>();
+    const [ listaCategoria, setListaCategoria ] = useState<Categoria[]>([]);
+   
+    
     
    
 
     const router = useRouter();
     const { catCodigo } = router.query;
 
+
+  
    
 
-    
+     
 
     
     const handleSubmit = (categoria: Categoria) => {     
@@ -34,6 +39,7 @@ export const CadastroCategoria: React.FC = () => {
             
            
             service.atualizar(categoria).then(response => {
+                
                 setMessages([{
                     tipo: "success", texto: "Categoria atualizado com sucesso!"
                 }])
@@ -45,11 +51,14 @@ export const CadastroCategoria: React.FC = () => {
             
             service.salvar(categoria)
             
-                    .then(CategoriaSalvo => {                       
-                        setCategoria(CategoriaSalvo);                     
+                    .then(categoriaSalvo => {                       
+                        setCategoria(categoriaSalvo); 
+                        setListaCategoria((state) => [...state, { ...categoriaSalvo }]);               
                         setMessages([{
                             tipo: "success", texto: "Categoria salvo com sucesso!"
+
                         }])
+
                         
                                         
                     })
@@ -61,9 +70,13 @@ export const CadastroCategoria: React.FC = () => {
         //<Layout titulo="Empresa">
         <React.Fragment>
             <Menu/>        
-            <CategoriaForm   onSubmit={handleSubmit}/>  
+            <CategoriaForm  onSubmit={handleSubmit}/>  
         </React.Fragment>
 
+        
+
        //</Layout>
+
+      
     )
 }

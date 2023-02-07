@@ -63,7 +63,7 @@ export const CadastroEmpresa: React.FC = () => {
         //<Layout titulo="Empresa">
         <React.Fragment>
             <Menu/>        
-            <EmpresaForm  empresaSalvo={empresa} mensagens={messages} onSubmit={handleSubmit}/>  
+            <EmpresaForm  empresaSalvo={empresa} onSubmit={handleSubmit}/>  
         </React.Fragment>
 
        //</Layout>

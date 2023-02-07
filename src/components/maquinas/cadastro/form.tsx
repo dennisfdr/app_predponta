@@ -67,8 +67,12 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
      /* Ativação das TabView */
-   const [activeIndex1, setActiveIndex1] = useState(0);
+    const [activeIndex1, setActiveIndex1] = useState(0);
 
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const [maquinaDialog, setMaquinaDialog] = useState(false);
     
 
     const formik = useFormik<Maquina>({
@@ -77,33 +81,106 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
         validationSchema: validationScheme
     })
 
+    /* Limpar formulário*/ 
+    const limparFormulario = () => {
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-      }, []); 
+        formik.setFieldValue("maqCodigo", '')
+        formik.setFieldValue("maqNome", '')
+        formik.setFieldValue("maqAndar", '')
+        formik.setFieldValue("maqStatus", '')
+        
+        
+
+    }
+
+
+
+    /*Carregando Empresas/Setor*/
+      const getEmpresas = () => {
+        empresaService.listar().then(response => setListaEmpresas(response))
+        setListaSetor(null);
+      }; 
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
-
-    /*Carregando Máquinas*/  
-
-    const { data: result, error } = useSWR<AxiosResponse<Maquina[]>>
-    ('/maquinas', url => httpClient.get(url) )
+      useEffect(() => { 
+       
+        getEmpresas();
+        
+      }, []); 
 
 
-    useEffect( () => {
-        setMaquinas(result?.data || [])
-    }, [result])
+     /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+    const getMaquinas = () => {
+        maquinaService.listar().then(response => setMaquinas(response))
+      }; 
+    
+      useEffect(() => { 
+       
+        getMaquinas();
+        
+      }, []);
+
+      const salvar = () => { 
+            maquinaService.salvar(formik.values).then(response => {
+                setMaquina(response); 
+                setMaquinas((state) => [...state, { ...response }]);  
+                toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+                /*Limpando formulário*/
+                limparFormulario(); 
+                getMaquinas();
+                setActiveIndex1(1);
+            
+
+            })       
+        }
+
+    const alterar = async () =>  {
+        maquinaService.atualizar(formik.values).then(response => {
+            toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario();
+            /*Alterando Caption Botão*/
+            setMostraBotao(false);
+
+            getMaquinas();
+        })
+    }
+
+    const deletar = async () =>  {
+            maquinaService.deletar(maquina.maqCodigo).then(response => {
+            setDeleteDialog(false);  
+            toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+            getMaquinas();
+            
+        })
+    }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setMaquinaDialog(false);
+    }
+
+    const confirmDelete = (empresa: React.SetStateAction<Maquina>) => {
+        setMaquina(maquina);
+        setDeleteDialog(true);
+    }
+
+    const maquinaDialogFooter = (
+        <React.Fragment>
+            <Button label="Fechar" icon="pi pi-times" className="p-button-text" onClick={hideDialog} /> 
+        </React.Fragment>
+    );
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
     
 
      
@@ -117,6 +194,29 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
 
     const confirmDeleteSelected = () => {
         setDeleteEmpresasDialog(true);
+    }
+
+    const editMaquina = (maquina: Maquina) => {
+
+        /*Altera caption do botão para ALTERAR*/
+        setMostraBotao(true);
+
+        /* Campos do formulário*/
+        
+        formik.setFieldValue("maqCodigo", maquina.maqCodigo)
+        formik.setFieldValue("maqNome", maquina.maqNome)
+        formik.setFieldValue("maqAndar", maquina.maqAndar)
+        formik.setFieldValue("maqStatus", maquina.maqStatus)
+        
+        
+    }
+
+    const consultaMaquina = (maquina: Maquina) => {
+
+        setMaquina({...maquina})
+        setMaquinaDialog(true);
+        setMostraBotao(false);  
+      
     }
 
     
@@ -136,12 +236,12 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: Maquina) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaMaquina(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editMaquina(rowData)}  disabled/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
@@ -177,7 +277,7 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Máquinas:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                            <Toast ref={toast} />
                             <TabView activeIndex={activeIndex1} onTabChange={(e) => setActiveIndex1(e.index)}>
                                 <TabPanel header="Dados da Máquina">
                                         <div className="grid">
@@ -253,6 +353,9 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                                     </div>
 
                                     <Button  type="submit" label="Salvar" icon="pi pi-check" />
+
+                                     
+
                                 </TabPanel>
 
                                 <TabPanel header="Máquina-Equipamento">
@@ -272,7 +375,7 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
 
                                     <span className="ml-2">
                                         <label style={{ color: "white" }} htmlFor="maeNome">Nome*</label>
-                                        <InputText style={{ width: "100%" }}  placeholder="Digite nome da Máquina-Equipamento" id="maeNome" name="maeNome" value={formik.values.maqNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        <InputText style={{ width: "100%" }}  placeholder="Digite nome da Máquina-Equipamento" id="maeNome" name="maeNome" value={formik.values.maeNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
 
                                     </span>
 
@@ -493,6 +596,49 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={maquinaDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Máquina" modal className="p-fluid" footer={maquinaDialogFooter} onHide={hideDialog}>
+             
+                                <div className="p-formgrid grid">
+                                    <div className="field col">
+                                        <label htmlFor="maqCodigo">Código: </label>
+                                        <InputText id="maqCodigo"  name="maqCodigo" value={maquina?.maqCodigo} disabled/>
+                                    </div>
+
+                                
+                    
+                                </div>
+                                
+                                <div className="p-formgrid grid">
+                                <div className="field col">
+                                    <label htmlFor="maqNome">Nome</label>
+                                    <InputText id="maqNome"  name="maqNome" value={maquina?.maqNome} disabled/>
+                                </div>
+
+                                <div className="p-checkbox-box">
+                                    <label htmlFor="maqStatus">Ativo:  </label>
+                                    <Checkbox  inputId="maqStatus" name="maqStatus" value={maquina?.maqStatus } icon/>   
+                                </div>
+
+                                </div>
+
+                                <div className="p-formgrid grid">
+
+                                <div className="field col">
+                                    <label htmlFor="maqAndar">Andar</label>
+                                    <InputText id="maqAndar"  name="maqAndar" value={maquina?.maqAndar} disabled/>
+                                </div>
+
+                                </div>
+                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {maquina && <span>Tem certeza que quer deletar? <b>{maquina.maqNome}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 

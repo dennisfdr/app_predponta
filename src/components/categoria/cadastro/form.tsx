@@ -5,7 +5,7 @@ import {
     AutoCompleteChangeParams, 
     AutoCompleteCompleteMethodParams 
 } from 'primereact/autocomplete'
-import { FormEvent, useEffect, useRef, useState } from 'react'
+import { useCallback, FormEvent, useEffect, useRef, useState } from 'react'
 
 
 import { 
@@ -36,7 +36,7 @@ import { MaquinaEquipamento } from 'app/model/maquina_equipamentos'
 import { Componente } from 'app/model/componentes'
 import React from 'react'
 import useSWR from 'swr'
-import { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { httpClient } from 'app/http'
 import { getEnvironmentData } from 'worker_threads'
 import { Checkbox } from 'primereact/checkbox'
@@ -57,6 +57,9 @@ import { Categoria} from 'app/model/categoria'
 
 
 interface CategoriaFormProps {
+
+    
+    
     onSubmit: (categoria: Categoria) => void;
    
 }
@@ -71,7 +74,9 @@ const formScheme: Categoria = {
 }
 
 export const CategoriaForm: React.FC<CategoriaFormProps> = ({
-    onSubmit,
+    
+    
+    onSubmit
    
 }) => {
 
@@ -86,7 +91,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
     const mcaCircuitoService = useMcaCircuitoService();
     const mcaStatusRelatorioService = useMcaStatusRelatorioService();
     const mcaStatusService = useMcaStatusService();
-    const categoriaService = useCategoriaService();
+    const service = useCategoriaService();
 
 
     
@@ -104,6 +109,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
     const [ listaMcaCircuito, setListaMcaCircuito ] = useState<McaCircuito[]>([]);
     const [ listaMcaStatusRelatorio, setListaMcaStatusRelatorio ] = useState<McaStatusRelatorio[]>([]);
     const [ listaCategoria, setListaCategoria ] = useState<Categoria[]>([]);
+     
 
     const [ maquinaEquipamento, setMaquinaEquipamento ] = useState<MaquinaEquipamento>(null);
     const [ componente, setComponente ] = useState<Componente>(null);
@@ -128,6 +134,12 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    const [, updateState] = useState();
+
+   const [deleteDialog, setDeleteDialog] = useState(false);
+
+   
     
 
     
@@ -135,40 +147,63 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
     const formik = useFormik<Categoria>({
         onSubmit,
         initialValues: formScheme,
-        validationSchema: validationScheme
+        validationSchema: validationScheme,
     })
 
+    /* Limpar formulário*/ 
+    const limparFormulario = () => {
 
-/*Carregando Empresas/Setor*/
+        formik.setFieldValue("catCodigo", '')
+        formik.setFieldValue("catDescricao", '')
+    }
+
+    /* Métodos do CRUD (listar, gravar, editar)*/
+    
+    const getData = () => {
+        service.listar().then(response => setListaCategoria(response))
+      }; 
+    
       useEffect(() => { 
+       
         getData();
         
       }, []); 
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
+    const salvar = () => { 
+        service.salvar(formik.values).then(response => {
+            setCategoria(response); 
+            setListaCategoria((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario();
+            
+            getData();
+            
 
-      
+        })       
+    }
 
-    /*Carregando Mca Relatorio*/  
+    const alterar = async () =>  {
+        service.atualizar(formik.values).then(response => {
+            toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario();
+            /*Alterando Caption Botão*/
+            setMostraBotao(false);
 
-    const { data: result, error } = useSWR<AxiosResponse<Categoria[]>>
-    ('/categoria', url => httpClient.get(url) )
+            getData()
+        })
+    }
 
-    useEffect( () => {
-        setListaCategoria(result?.data || [])
-    }, [result])
-
-    
+    const deletar = async () =>  {
+            service.deletar(categoria.catCodigo).then(response => {
+            setDeleteDialog(false);  
+            toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+            getData()
+            
+        })
+    }
+   
 
 
     
@@ -182,13 +217,29 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
     }
 
 
-    const confirmDeleteSelected = () => {
-        setDeleteEmpresasDialog(true);
+    
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
     }
 
-    
+    const confirmDelete = (categoria: React.SetStateAction<Categoria>) => {
+        setCategoria(categoria);
+        setDeleteDialog(true);
+    }
 
-    
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const confirmDeleteSelected = () => {
+       // setDeleteProductsDialog(true);
+    }
+
+   
 
     const header = (
         <div className="flex flex-column md:flex-row md:align-items-right justify-content-between">
@@ -208,7 +259,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
             <React.Fragment> 
                     <Button icon="pi pi-search" tooltip='Consultar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-info" type="button"  onClick={() => consultaCategoria(rowData)}/>      
                     <Button icon="pi pi-pencil" tooltip='Editar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-success mr-2" type="button" onClick={() => editCategoria(rowData)}  />
-                    <Button icon="pi pi-trash" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-danger"  type="button" onClick={() => deleteCategoria(rowData)} />
+                    <Button icon="pi pi-trash" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-danger"  type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
@@ -238,10 +289,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
       
     }
 
-    const deleteCategoria = (categoria: Categoria) => {
-
-        categoriaService.deletar(categoria.catCodigo)
-    }
+    
 
 
 
@@ -249,7 +297,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
 
     const categoriaDialogFooter = (
         <React.Fragment>
-                <Button label="Fechar" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
+                <Button label="Fechar" icon="pi pi-times" className="p-button-text"  />
         </React.Fragment>
     );
 
@@ -299,6 +347,9 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
         formik.setFieldValue("mcaMedicao", e.value)
     } */
 
+    
+
+    
 
    
 
@@ -312,6 +363,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Categorias:</span>
                         <form onSubmit={formik.handleSubmit}>
+                        <Toast ref={toast} />
 
                             
                                   <div className="grid">
@@ -348,9 +400,9 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
 
 
                                     {!mostraBotao &&
-                                        <Button type="submit" label="Salvar" icon="pi pi-check"  />
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
                                     } {mostraBotao &&
-                                        <Button  type="submit" label="Alterar" icon="pi pi-check" />
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     }  
 
                                     
@@ -363,7 +415,7 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
                                 dataKey="catCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
-                                globalFilter={globalFilter}  header={header} responsiveLayout="stack">
+                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" >
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="catCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="catDescricao" header="Descrição" sortable style={{ minWidth: '12rem' }}></Column>
@@ -411,6 +463,13 @@ export const CategoriaForm: React.FC<CategoriaFormProps> = ({
                                     </div>
             
                 
+                </Dialog>
+
+                <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                    <div className="flex align-items-center justify-content-center">
+                        <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                        {categoria && <span>Tem certeza que quer deletar? <b>{categoria.catDescricao}</b>?</span>}
+                    </div>
                 </Dialog>
                 
             </div>

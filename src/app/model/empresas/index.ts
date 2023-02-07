@@ -13,9 +13,9 @@ export interface Empresa {
     empPeriodicidadeIt?: string;
     empPeriodicidadeRi?: string;
     empPeriodicidadeMca?: string;
-    empresaEmail: Array<EmpresaEmail>;
-    imagens: Array<ArquivoUpload>;
-    setor: Array<Setor>;
+    empresaEmail?: Array<EmpresaEmail>;
+    imagens?: Array<ArquivoUpload>;
+    setor?: Array<Setor>;
     
 }
 
