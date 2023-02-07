@@ -271,15 +271,13 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
 
     return (
 
-        <div className="tabview-demo">
-            <div className="card"></div>
+       
 
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Máquinas:</span>
                         <form onSubmit={formik.handleSubmit}>
                             <Toast ref={toast} />
-                            <TabView activeIndex={activeIndex1} onTabChange={(e) => setActiveIndex1(e.index)}>
-                                <TabPanel header="Dados da Máquina">
+                            
                                         <div className="grid">
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
@@ -352,232 +350,15 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                                             </div>
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
 
                                      
-
-                                </TabPanel>
-
-                                <TabPanel header="Máquina-Equipamento">
-
-                                    <div className="col-2">
-
-                                        <span className="ml-2">
-                                            <label style={{ color: "white" }} htmlFor="maeCodigo">Codigo</label>
-                                            <InputText style={{ width: "100%" }}  disabled placeholder="Código Maq-Equipamento" id="maeCodigo" name="maeCodigo" value={formik.values.maqCodigo} />
-
-                                        </span>
-
-
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="maeNome">Nome*</label>
-                                        <InputText style={{ width: "100%" }}  placeholder="Digite nome da Máquina-Equipamento" id="maeNome" name="maeNome" value={formik.values.maeNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    <small className="p-error p-d-block">
-                                        {formik.touched && formik.errors.maqNome}
-                                    </small>
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="maeTag">TAG*</label>
-                                        <InputText style={{ width: "100%" }}  placeholder="Digite a Tag da Máquina-Equipamento" id="maeTag" name="maeTag" value={formik.values.maqAndar}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    <small className="p-error p-d-block">
-                                        {formik.touched && formik.errors.maqAndar}
-                                    </small>
-                                    </div>
-
-                                    <div className="col-2">
-                                        <span className="ml-2">
-                                            <label style={{ color: "white" }} htmlFor="maeStatus">Ativa: *</label><br></br>
-                                            <Checkbox inputId="maeStatus" name="maeStatus" checked={formik.values.maqStatus} onChange={formik.handleChange} />
-
-                                        </span>
-
-                                    </div>
-                                    
-
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
-
-
-                                </TabPanel>
-
+                        
                                 
-
-                                <TabPanel header="Componente">
-
-                                    <div className="col-2">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="comCodigo">Codigo</label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Componente" id="comCodigo" name="comCodigo" value={formik.values.maqCodigo} />
-
-                                    </span>
-
-
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="comNome">Nome*</label>
-                                    <InputText style={{ width: "100%" }}  placeholder="Digite nome do Componente" id="comNome" name="comNome" value={formik.values.maqNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    <small className="p-error p-d-block">
-                                    {formik.touched && formik.errors.maqNome}
-                                    </small>
-                                    </div>
-
-                                    
-
-                                    <div className="col-2">
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="comStatus">Ativo: *</label><br></br>
-                                        <Checkbox inputId="comStatus" name="comStatus" checked={formik.values.maqStatus} onChange={formik.handleChange} />
-
-                                    </span>
-
-                                    </div>
-
-
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
-
-
-                                </TabPanel>
-
-                                <TabPanel header="Componente-Peça">
-
-                                    <div className="col-2">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="copCodigo">Codigo</label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Componente-Peça" id="copCodigo" name="copCodigo" value={formik.values.maqCodigo} />
-
-                                    </span>
-
-
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="copDescricao">Descrição*</label>
-                                    <InputText style={{ width: "100%" }}  placeholder="Digite a descrição do Componente-Peça" id="copDescricao" name="copDescricao" value={formik.values.maqNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    <small className="p-error p-d-block">
-                                    {formik.touched && formik.errors.maqNome}
-                                    </small>
-                                    </div>
-
-
-
-                                    <div className="col-2">
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="copStatus">Ativo: *</label><br></br>
-                                        <Checkbox inputId="copStatus" name="copStatus" checked={formik.values.maqStatus} onChange={formik.handleChange} />
-
-                                    </span>
-
-                                    </div>
-
-
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
-
-
-                                </TabPanel>
-
-
-                                <TabPanel header="Sub-Componente">
-
-                                    <div className="col-2">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="scoCodigo">Codigo</label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Sub-Componente" id="scoCodigo" name="scoCodigo" value={formik.values.maqCodigo} />
-
-                                    </span>
-
-
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="scoNome">Nome*</label>
-                                    <InputText style={{ width: "100%" }}  placeholder="Digite nome do Sub-Componente" id="scoNome" name="scoNome" value={formik.values.maqNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    <small className="p-error p-d-block">
-                                    {formik.touched && formik.errors.maqNome}
-                                    </small>
-                                    </div>
-
-
-
-                                    <div className="col-2">
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="scoStatus">Ativo: *</label><br></br>
-                                        <Checkbox inputId="scoStatus" name="scoStatus" checked={formik.values.maqStatus} onChange={formik.handleChange} />
-
-                                    </span>
-
-                                    </div>
-
-
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
-
-
-                                </TabPanel>
-
-                                <TabPanel header="Componente-Subcomponente">
-
-                                    <div className="col-2">
-
-                                    <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="cscCodigo">Codigo</label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Componente-Subcomponente" id="cscCodigo" name="cscCodigo" value={formik.values.maqCodigo} />
-
-                                    </span>
-
-
-                                    </div>
-
-                                    <div className="col-4">
-
-                                    <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="cscDescricao">Descrição*</label>
-                                    <InputText style={{ width: "100%" }}  placeholder="Digite a descrição do Componente-Subcomponente" id="cscDescricao" name="cscDescricao" value={formik.values.maqNome}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                    </span>
-
-                                    </div>
-
-
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
-
-
-                                </TabPanel>
-                            
-                            
-                            
-                            
-                            </TabView>      
-                    
                         
                         <div>
 
@@ -646,6 +427,6 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                 </form>
                 
             </div>
-        </div>
+       
     );
 }
