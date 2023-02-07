@@ -152,7 +152,7 @@ const getEntidades = () => {
     entidadeService.salvar(formik.values).then(response => {
             setEntidade(response); 
             console.log(response);
-            setEntidades((state) => [...state, { ...response }]);  
+            //setEntidades((state) => [...state, { ...response }]);  
             toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
             /*Limpando formulário*/
             limparFormulario(); 
