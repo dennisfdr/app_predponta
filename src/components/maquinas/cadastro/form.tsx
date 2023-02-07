@@ -287,7 +287,7 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange}
                                                     
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 

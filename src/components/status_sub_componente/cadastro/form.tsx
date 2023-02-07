@@ -328,7 +328,7 @@ const confirmDelete = (entidade: React.SetStateAction<StatusSubComponente>) => {
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 

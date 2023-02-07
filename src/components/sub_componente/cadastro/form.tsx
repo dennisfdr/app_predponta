@@ -339,7 +339,7 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -437,8 +437,10 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
                                             <div className="col-4">
 
                                                     <span className="ml-2">
-                                                        <label style={{ color: "white" }} htmlFor="scoStatus">Status*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Status" id="scoStatus" name="scoStatus" value={formik.values.scoStatus}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                                        
+                                                        <label style={{ color: "white" }} htmlFor="scoStatus">Ativa: *</label><br></br>
+                                                        <Checkbox inputId="scoStatus" name="scoStatus" checked={formik.values.scoStatus} onChange={formik.handleChange} />
+
 
                                                     </span>
 

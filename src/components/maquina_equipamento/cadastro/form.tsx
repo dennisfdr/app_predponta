@@ -304,7 +304,7 @@ export const MaquinaEquipamentoForm: React.FC<MaquinaEquipamentoFormProps> = ({
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange}
                                                     
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 

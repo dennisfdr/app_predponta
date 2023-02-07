@@ -333,7 +333,7 @@ const confirmDelete = (entidade: React.SetStateAction<HistoricoComponente>) => {
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 

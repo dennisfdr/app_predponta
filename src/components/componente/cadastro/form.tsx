@@ -310,7 +310,7 @@ export const ComponenteForm: React.FC<ComponenteFormProps> = ({
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange}
                                                     
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
