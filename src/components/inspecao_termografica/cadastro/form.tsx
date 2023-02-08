@@ -14,6 +14,7 @@ import {
     useMaquinaEquipamentoService, 
     useComponenteService,
     useMedicaoService, 
+    useInspecaoTermograficaService,
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -130,6 +131,15 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<InspecaoTermografica[]>([]);
+    const [ entidade, setEntidade ] = useState<InspecaoTermografica>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useInspecaoTermograficaService();
     
 
     
@@ -141,35 +151,166 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
 
-      
+    formik.setFieldValue("iteCodigo", '')
+    formik.setFieldValue("itePosicao", '')
+    formik.setFieldValue("iteFase", '')
+    formik.setFieldValue("iteFalha", '')
+    formik.setFieldValue("iteAcaoProposta", '')
+    formik.setFieldValue("iteFotoCamera", '')
+    formik.setFieldValue("iteFotoTermografica", '')
+    formik.setFieldValue("itePosHaviaFalha", '')
+    formik.setFieldValue("itePosHaviaFalhaObs", '')
+    formik.setFieldValue("itePosDiagnosticoFalha", '')
+    formik.setFieldValue("itePosDiagnosticoFalhaObs", '')
+    formik.setFieldValue("itePosTrabalhoAlem", '')
+    formik.setFieldValue("itePosTrabalhoAlemObs", '')
+    formik.setFieldValue("itePosDataIntervencao", '')
+    formik.setFieldValue("itePosTempoExecucao", '')
+    formik.setFieldValue("itePosResponsavel", '')
+    formik.setFieldValue("itePosNumeroOs", '')
+    formik.setFieldValue("itePosAvaliacaoIt", '')
+    formik.setFieldValue("iteDataAvaliacao", '')
+    formik.setFieldValue("iteStatus", '')
+    formik.setFieldValue("iteDataCriacao", '')
+    formik.setFieldValue("iteTipo", '')
+    formik.setFieldValue("iteFotoPainel", '')
+    formik.setFieldValue("iteFotoPainelDesc", '')
+    formik.setFieldValue("iteDataBaixa", '')
+    formik.setFieldValue("itePrazoExecucao", '')
+    formik.setFieldValue("iteEquipamentos", '')
+    formik.setFieldValue("iteTecnicoResponsavel", '')
+    formik.setFieldValue("iteNumeroOs", '')
+    formik.setFieldValue("iteCustoPreditiva", '')
+    formik.setFieldValue("iteCustoCorretiva", '')
+    formik.setFieldValue("iteQuebraEquipamento", '')
+    formik.setFieldValue("itePainelNumPortas", '')
+    
+    
+}
 
-    /*Carregando InspecaoAcusticaLocal*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<InspecaoTermografica[]>>
-    ('/inspecaotermografica', url => httpClient.get(url) )
 
-    useEffect( () => {
-        setListaInspecaoTermografica(result?.data || [])
-    }, [result])
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
 
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.iteCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: InspecaoTermografica) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("iteCodigo", entidade.iteCodigo)
+    formik.setFieldValue("itePosicao", entidade.itePosicao )
+    formik.setFieldValue("iteFase", entidade.iteFase )
+    formik.setFieldValue("iteFalha", entidade.iteFalha )
+    formik.setFieldValue("iteAcaoProposta", entidade.iteAcaoProposta )
+    formik.setFieldValue("iteFotoCamera", entidade.iteFotoCamera )
+    formik.setFieldValue("iteFotoTermografica", entidade.iteFotoTermografica )
+    formik.setFieldValue("itePosHaviaFalha", entidade.itePosAvaliacaoIt )
+    formik.setFieldValue("itePosHaviaFalhaObs", entidade.itePosHaviaFalhaObs )
+    formik.setFieldValue("itePosDiagnosticoFalha", entidade.itePosDiagnosticoFalha )
+    formik.setFieldValue("itePosDiagnosticoFalhaObs", entidade.itePosDiagnosticoFalhaObs )
+    formik.setFieldValue("itePosTrabalhoAlem", entidade.itePosTrabalhoAlem )
+    formik.setFieldValue("itePosTrabalhoAlemObs", entidade.itePosTrabalhoAlemObs )
+    formik.setFieldValue("itePosDataIntervencao", entidade.itePosDataIntervencao )
+    formik.setFieldValue("itePosTempoExecucao", entidade.itePosTempoExecucao )
+    formik.setFieldValue("itePosResponsavel", entidade.itePosResponsavel )
+    formik.setFieldValue("itePosNumeroOs", entidade.itePosNumeroOs )
+    formik.setFieldValue("itePosAvaliacaoIt", entidade.itePosAvaliacaoIt )
+    formik.setFieldValue("iteDataAvaliacao", entidade.iteDataAvaliacao )
+    formik.setFieldValue("iteStatus", entidade.iteStatus )
+    formik.setFieldValue("iteDataCriacao", entidade.iteDataCriacao )
+    formik.setFieldValue("iteTipo", entidade.iteTipo )
+    formik.setFieldValue("iteFotoPainel", entidade.iteFotoPainel )
+    formik.setFieldValue("iteFotoPainelDesc", entidade.iteFotoPainelDesc )
+    formik.setFieldValue("iteDataBaixa", entidade.iteDataBaixa )
+    formik.setFieldValue("itePrazoExecucao", entidade.itePrazoExecucao )
+    formik.setFieldValue("iteEquipamentos", entidade.iteEquipamentos )
+    formik.setFieldValue("iteTecnicoResponsavel", entidade.iteTecnicoResponsavel )
+    formik.setFieldValue("iteNumeroOs", entidade.iteNumeroOs )
+    formik.setFieldValue("iteCustoPreditiva", entidade.iteCustoPreditiva )
+    formik.setFieldValue("iteCustoCorretiva", entidade.iteCustoCorretiva )
+    formik.setFieldValue("iteQuebraEquipamento", entidade.iteQuebraEquipamento )
+    formik.setFieldValue("itePainelNumPortas", entidade.itePainelNumPortas ) 
+    
+    
+}
+
+const consultaEntidade = (entidade: InspecaoTermografica) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<InspecaoTermografica>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
     
 
 
@@ -205,14 +346,30 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: InspecaoTermografica) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
+    }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
     }
 
     
@@ -269,7 +426,7 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Inspeção Termográfica:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                            <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -279,7 +436,7 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -702,13 +859,11 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="itePosTempoExecucao">Pos Tempo Exec.*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite Pos Tempo Exec." id="itePosTempoExecucao" name="itePosTempoExecucao" value={formik.values.itePosTempoExecucao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                                        <Calendar style={{ width: "100%" }}  placeholder="Digite Pos Tempo Exec." id="itePosTempoExecucao" name="itePosTempoExecucao" value={date1}  onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
 
                                                     </span>
 
-                                                    <small className="p-error p-d-block">
-                                                        {formik.touched && formik.errors.itePosTempoExecucao}
-                                                    </small>
+                                                   
 
                                                     
                                            </div>
@@ -836,13 +991,17 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
                                             
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaInspecaoTermografica} selection={selectedInspecaoTermografica} onSelectionChange={(e) => setSelectedInspecaoTermografica(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedInspecaoTermografica} onSelectionChange={(e) => setSelectedInspecaoTermografica(e.value)}
                                 dataKey="iteCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -857,6 +1016,431 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Inspeção Termográfica" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                                        <div className="col-2">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteCodigo">Codigo</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Código InspecaoTermografica" id="iteCodigo" name="iteCodigo" value={entidade?.iteCodigo} />
+
+                                </span>
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteAcaoProposta">Acao Proposta*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Acao Proposta" id="iteAcaoProposta" name="iteAcaoProposta" value={entidade?.iteAcaoProposta}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                </span>
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteCustoCorretiva">Custo Corretiva*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Custo Corretiva" id="iteCustoCorretiva" name="iteCustoCorretiva" value={entidade?.iteCustoCorretiva}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteCustoPreditiva">Custo Preditiva*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Custo Preditiva" id="iteCustoPreditiva" name="iteCustoPreditiva" value={entidade?.iteCustoPreditiva}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteDataAvaliacao">Data Avaliacao*</label><br></br>
+                                    <Calendar  id="iteDataAvaliacao" disabled name="iteDataAvaliacao" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                                </span>
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteDataBaixa">Data Baixa*</label><br></br>
+                                    <Calendar  id="iteDataBaixa" disabled name="iteDataBaixa" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                                </span>
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteDataCriacao">Data Criacao*</label><br></br>
+                                    <Calendar  id="iteDataCriacao" disabled name="iteDataCriacao" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                                </span>
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteEquipamentos">Equipamentos*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite os Equipamentos" id="iteEquipamentos" name="iteEquipamentos" value={entidade?.iteEquipamentos}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFalha">Falha*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Falha" id="iteFalha" name="iteFalha" value={entidade?.iteFalha}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFase">Fase*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Fase" id="iteFase" name="iteFase" value={entidade?.iteFase}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFotoCamera">Foto Camera*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Foto Camera" id="iteFotoCamera" name="iteFotoCamera" value={entidade?.iteFotoCamera}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFotoPainel">Foto Painel*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Foto Painel" id="iteFotoPainel" name="iteFotoPainel" value={entidade?.iteFotoPainel}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFotoPainelDesc">Foto Painel Desc*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Foto Painel Desc" id="iteFotoPainelDesc" name="iteFotoPainelDesc" value={entidade?.iteFotoPainelDesc}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteFotoTermografica">Foto Termografica*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Foto Termografica" id="iteFotoTermografica" name="iteFotoTermografica" value={entidade?.iteFotoTermografica}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteNumeroOs">Numero OS*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Numero OS" id="iteNumeroOs" name="iteNumeroOs" value={entidade?.iteNumeroOs}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePainelNumPortas">Painel NumPortas*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Painel NumPortas" id="itePainelNumPortas" name="itePainelNumPortas" value={entidade?.itePainelNumPortas}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosAvaliacaoIt">Pos AvaliacaoIt*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos AvaliacaoIt" id="itePosAvaliacaoIt" name="itePosAvaliacaoIt" value={entidade?.itePosAvaliacaoIt}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosDiagnosticoFalha">Pos Diag. Falha*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Diag. Falha" id="itePosDiagnosticoFalha" name="itePosDiagnosticoFalha" value={entidade?.itePosDiagnosticoFalha}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosDataIntervencao">Pos Data Interv.*</label><br></br>
+                                    <Calendar  id="itePosDataIntervencao" disabled name="itePosDataIntervencao" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                                </span>
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosDiagnosticoFalhaObs">Pos Diag. Falha OBS*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Diag. Falha OBS" id="itePosDiagnosticoFalhaObs" name="itePosDiagnosticoFalhaObs" value={entidade?.itePosDiagnosticoFalhaObs}    />
+
+                                </span>
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosHaviaFalha">Pos Havia Falha*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Diag. Falha OBS" id="itePosHaviaFalha" name="itePosHaviaFalha" value={entidade?.itePosHaviaFalha}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosHaviaFalhaObs">Pos Havia Falha OBS*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Diag. Falha OBS" id="itePosHaviaFalhaObs" name="itePosHaviaFalhaObs" value={entidade?.itePosHaviaFalhaObs}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosNumeroOs">Pos Num. OS*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Num. OS" id="itePosNumeroOs" name="itePosNumeroOs" value={entidade?.itePosNumeroOs}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosResponsavel">Pos Responsável*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Responsável" id="itePosResponsavel" name="itePosResponsavel" value={entidade?.itePosResponsavel}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosTempoExecucao">Pos Tempo Exec.*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Tempo Exec." id="itePosTempoExecucao" name="itePosTempoExecucao" value={entidade?.itePosTempoExecucao}    />
+
+                                </span>
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosTrabalhoAlem">Pos Trab. Além.*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Trab. Além." id="itePosTrabalhoAlem" name="itePosTrabalhoAlem" value={entidade?.itePosTrabalhoAlem}    />
+
+                                </span>
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosTrabalhoAlemObs">Pos Trab. Além OBS*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Pos Trab. Além OBS" id="itePosTrabalhoAlemObs" name="itePosTrabalhoAlemObs" value={entidade?.itePosTrabalhoAlemObs}    />
+
+                                </span>
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePosicao">Posicao*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Posicao" id="itePosicao" name="itePosicao" value={entidade?.itePosicao}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="itePrazoExecucao">Prazo Execução*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Prazo Execução" id="itePrazoExecucao" name="itePrazoExecucao" value={entidade?.itePrazoExecucao}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteQuebraEquipamento">Quebra Equipamento*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Prazo Execução" id="iteQuebraEquipamento" name="iteQuebraEquipamento" value={entidade?.iteQuebraEquipamento}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteStatus">Status*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Status" id="iteStatus" name="iteStatus" value={entidade?.iteStatus}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteTecnicoResponsavel">Téc. Responsável*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Tec. Responsável" id="iteTecnicoResponsavel" name="iteTecnicoResponsavel" value={entidade?.iteTecnicoResponsavel}    />
+
+                                </span>
+
+
+
+
+                                </div>
+
+                                <div className="col-4">
+
+                                <span className="ml-2">
+                                    <label style={{ color: "white" }} htmlFor="iteTipo">Tipo*</label>
+                                    <InputText style={{ width: "100%" }}  disabled placeholder="Digite Tipo" id="iteTipo" name="iteTipo" value={entidade?.iteTipo}    />
+
+                                </span>
+
+
+
+
+                                </div>
+                                
+                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.iteCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 
