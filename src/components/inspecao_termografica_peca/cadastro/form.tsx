@@ -14,7 +14,8 @@ import {
     useMaquinaEquipamentoService, 
     useComponenteService,
     useMedicaoService,
-    useInspecaoTermograficaService, 
+    useInspecaoTermograficaService,
+    useInspecaoTermograficaPecaService 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -107,6 +108,15 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<InspecaoTermograficaPeca[]>([]);
+    const [ entidade, setEntidade ] = useState<InspecaoTermograficaPeca>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useInspecaoTermograficaPecaService();
     
 
     
@@ -118,34 +128,104 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
 
-      
+    formik.setFieldValue("itpCodigo", '')
+    
+    
+    
+}
 
-    /*Carregando InspecaoAcusticaLocal*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<InspecaoTermograficaPeca[]>>
-    ('/inspecaotermograficapeca', url => httpClient.get(url) )
 
-    useEffect( () => {
-        setListaInspecaoTermograficaPeca(result?.data || [])
-    }, [result])
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
+
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.itpCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: InspecaoTermograficaPeca) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("itpCodigo", entidade.itpCodigo)
+    
+    
+    
+}
+
+const consultaEntidade = (entidade: InspecaoTermograficaPeca) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -182,16 +262,31 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: InspecaoTermograficaPeca) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
 
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
+    }
     
 
 
@@ -254,6 +349,8 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Inspeção Termográfica Peca:</span>
                         <form onSubmit={formik.handleSubmit}>
 
+                            <Toast ref={toast} />
+
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -263,7 +360,7 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -362,13 +459,17 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
                                             
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaInspecaoTermograficaPeca} selection={selectedInspecaoTermograficaPeca} onSelectionChange={(e) => setSelectedInspecaoTermograficaPeca(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedInspecaoTermograficaPeca} onSelectionChange={(e) => setSelectedInspecaoTermograficaPeca(e.value)}
                                 dataKey="itpCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -381,6 +482,28 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
                             </DataTable>
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Inspeção Termográfica" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                    <div className="col-2">
+
+                                        <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="itpCodigo">Codigo</label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código InspecaoTermograficaPeca" id="itpCodigo" name="itpCodigo" value={entidade?.itpCodigo} />
+
+                                        </span>
+
+
+                                </div>
+
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.itpCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                 
 

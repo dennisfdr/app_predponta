@@ -116,8 +116,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable>(null);
     const [entityDialog, setEntityDialog] = useState(false);
-    const [mostraBotao, setMostraBotao] = useState(false);
-    const [submitted, setSubmitted] = useState(false);
+    
 
     const [selectedEspecificacaoFalha, setSelectedEspecificacaoFalha] = useState<EspecificacaoFalha[]>([]);
     const [ maquinas, setMaquinas ] = useState<Maquina[]>([]);
@@ -125,6 +124,15 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<EspecificacaoFalha[]>([]);
+    const [ entidade, setEntidade ] = useState<EspecificacaoFalha>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useEspecificacaoFalhaService();
     
 
     
@@ -136,34 +144,113 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
 
-      
+    formik.setFieldValue("efaCodigo", '')
+    formik.setFieldValue("efaTemperaturaFalha", '')
+    formik.setFieldValue("efaTemperaturaAceitavel", '')
+    formik.setFieldValue("efaExcessoTemperatura", '')
+    formik.setFieldValue("efaPrazoLimite", '')
+    formik.setFieldValue("efaPontoTermograma", '')
+    
+    
+}
 
-    /*Carregando InspecaoAcusticaLocal*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<EspecificacaoFalha[]>>
-    ('/especificacaofalha', url => httpClient.get(url) )
 
-    useEffect( () => {
-        setListaEspecificacaoFalha(result?.data || [])
-    }, [result])
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
+
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.efaCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: EspecificacaoFalha) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+        formik.setFieldValue("efaCodigo", entidade.efaCodigo)
+        formik.setFieldValue("efaTemperaturaFalha", entidade.efaTemperaturaFalha)
+        formik.setFieldValue("efaTemperaturaAceitavel", entidade.efaTemperaturaAceitavel)
+        formik.setFieldValue("efaExcessoTemperatura", entidade.efaExcessoTemperatura)
+        formik.setFieldValue("efaPrazoLimite", entidade.efaPrazoLimite)
+        formik.setFieldValue("efaPontoTermograma", entidade.efaPontoTermograma)
+    
+    
+    
+}
+
+const consultaEntidade = (entidade: EspecificacaoFalha) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<EspecificacaoFalha>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -203,77 +290,33 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     const actionBodyTemplate = (rowData: EspecificacaoFalha) => {
         return (
             <React.Fragment> 
-                    <Button icon="pi pi-search" tooltip='Consultar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-info" type="button"  onClick={() => consultaEntity(rowData)}/>      
-                    <Button icon="pi pi-pencil" tooltip='Editar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-success mr-2" type="button" onClick={() => editEntity(rowData)}  />
-                    <Button icon="pi pi-trash" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} className="p-button-rounded p-button-danger"  type="button" onClick={() => deleteEntity(rowData)} />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
     }
 
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
     const hideDialog = () => {
         setSubmitted(false);
-        setEntityDialog(false);
+        setEntidadeDialog(false);
     }
 
 
-    const editEntity = (especificacaoFalha: EspecificacaoFalha) => {
-
-        
-        carregaDados(especificacaoFalha)
-        
-        /*Altera caption do botão para ALTERAR*/
-        setMostraBotao(true);
-
-        /* Campos do formulário*/
-        
-        formik.setFieldValue("efaCodigo", especificacaoFalha.efaCodigo)
-        formik.setFieldValue("efaTemperaturaFalha", especificacaoFalha.efaTemperaturaFalha)
-        formik.setFieldValue("efaTemperaturaAceitavel", especificacaoFalha.efaTemperaturaAceitavel)
-        formik.setFieldValue("efaExcessoTemperatura", especificacaoFalha.efaExcessoTemperatura)
-        formik.setFieldValue("efaPrazoLimite", especificacaoFalha.efaPrazoLimite)
-        formik.setFieldValue("efaPontoTermograma", especificacaoFalha.efaPontoTermograma)
-       
-       
-
-        
-            
-
-        
-
-        
-    }
-
-    const carregaDados= (especificacaoFalha: EspecificacaoFalha) => {
-
-        console.log(especificacaoFalha.condicoesAmbiente)
-
-        setCondicoesAmbiente(especificacaoFalha.condicoesAmbiente)
-      
-        condicoesAmbienteService.carregar(condicoesAmbiente?.camCodigo).then(condicoesAmbiente => setCondicoesAmbiente(condicoesAmbiente))
-        setInspecaoTermograficaPeca(condicoesAmbiente?.inspecaoTermograficaPeca)
-        inspecaoTermograficaPecaService.carregar(inspecaoTermograficaPeca?.itpCodigo).then(inspecaoTermograficaPeca => setInspecaoTermograficaPeca(inspecaoTermograficaPeca))
-        setInspecaoTermografica(inspecaoTermograficaPeca?.inspecaoTermografica)
-        inspecaoTermograficaService.carregar(inspecaoTermografica?.iteCodigo).then(inspecaoTermografica => setInspecaoTermografica(inspecaoTermografica))
-        setMedicao(inspecaoTermografica?.medicao)
-        medicaoService.carregar(medicao?.medCodigo).then(medicao => setMedicao(medicao))
-        console.log("Medicao: " , medicao?.componente)
-        setComponente(medicao?.componente)
-
-
-    }
     
-    const consultaEntity = (especificacaoFalha: EspecificacaoFalha) => {
-        
-        setEspecificacaoFalha({...especificacaoFalha})
-        setEntityDialog(true);
-        setMostraBotao(false);  
-      
-    }
 
-    const deleteEntity = (especificacaoFalha: EspecificacaoFalha) => {
-
-        epecificacaoFalhaService.deletar(especificacaoFalha.efaCodigo)
-    }
+    
 
     const entityDialogFooter = (
         <React.Fragment>
@@ -351,6 +394,8 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Especificação Falha:</span>
                         <form onSubmit={formik.handleSubmit}>
 
+                        <Toast ref={toast} />
+
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -360,7 +405,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" 
                                                     />
 
@@ -408,7 +453,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                                 <label style={{ color: "white" }} htmlFor="componente">Componente: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={componente?.comCodigo} 
+                                                    value={componente?.comNome} 
                                                     options={listaComponente} 
                                                     onChange={handleComponenteChange} 
                                                     optionLabel="comNome" 
@@ -421,7 +466,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                                 <label style={{ color: "white" }} htmlFor="medicao">Medicao: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={medicao?.medCodigo} 
+                                                    value={medicao?.medData} 
                                                     options={listaMedicao} 
                                                     onChange={handleMedicaoChange} 
                                                     optionLabel="medCodigo" 
@@ -574,15 +619,15 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
                                     </div>
 
                                     {!mostraBotao &&
-                                        <Button type="submit" label="Salvar" icon="pi pi-check"  />
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
                                     } {mostraBotao &&
-                                        <Button  type="submit" label="Alterar" icon="pi pi-check" />
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     } 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaEspecificacaoFalha} selection={selectedEspecificacaoFalha} onSelectionChange={(e) => setSelectedEspecificacaoFalha(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedEspecificacaoFalha} onSelectionChange={(e) => setSelectedEspecificacaoFalha(e.value)}
                                 dataKey="efaCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -601,12 +646,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                         </div>
 
-                
-
-
-                </form>
-
-                <Dialog visible={entityDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Especificação de Falhas" modal className="p-fluid" footer={entityDialogFooter} onHide={hideDialog}>
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Especificação de Falhas" modal className="p-fluid" footer={entityDialogFooter} onHide={hideDialog}>
 
                                         <div className="grid">
                                             
@@ -614,7 +654,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaCodigo">Codigo:</label>
-                                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Especificação Falha" id="efaCodigo" name="efaCodigo" value={especificacaoFalha?.efaCodigo} />
+                                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Especificação Falha" id="efaCodigo" name="efaCodigo" value={entidade?.efaCodigo} />
 
                                                     </span>
 
@@ -625,7 +665,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaExcessoTemperatura">Excesso Temperatura*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Excesso de Temperatura" id="efaExcessoTemperatura" name="efaExcessoTemperatura" value={especificacaoFalha?.efaExcessoTemperatura} />
+                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Excesso de Temperatura" id="efaExcessoTemperatura" name="efaExcessoTemperatura" value={entidade?.efaExcessoTemperatura} />
 
                                                     </span>
 
@@ -638,7 +678,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaPontoTermograma">Ponto Termograma*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Ponto Termograma" id="efaPontoTermograma" name="efaPontoTermograma" value={especificacaoFalha?.efaPontoTermograma}  />
+                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Ponto Termograma" id="efaPontoTermograma" name="efaPontoTermograma" value={entidade?.efaPontoTermograma}  />
 
                                                     </span>
 
@@ -651,7 +691,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaPrazoLimite">Prazo Limite*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Prazo Limite" id="efaPrazoLimite" name="efaPrazoLimite" value={especificacaoFalha?.efaPrazoLimite}  />
+                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Prazo Limite" id="efaPrazoLimite" name="efaPrazoLimite" value={entidade?.efaPrazoLimite}  />
 
                                                     </span>
 
@@ -664,7 +704,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaTemperaturaAceitavel">Temperatura Aceitável*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite a Temperatura Aceitável" id="efaTemperaturaAceitavel" name="efaTemperaturaAceitavel" value={especificacaoFalha?.efaTemperaturaAceitavel}  />
+                                                        <InputText style={{ width: "100%" }}  placeholder="Digite a Temperatura Aceitável" id="efaTemperaturaAceitavel" name="efaTemperaturaAceitavel" value={entidade?.efaTemperaturaAceitavel}  />
 
                                                     </span>
 
@@ -677,7 +717,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="efaTemperaturaFalha">Temperatura Falha*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite a Temperatura Falha" id="efaTemperaturaFalha" name="efaTemperaturaFalha" value={especificacaoFalha?.efaTemperaturaFalha}   />
+                                                        <InputText style={{ width: "100%" }}  placeholder="Digite a Temperatura Falha" id="efaTemperaturaFalha" name="efaTemperaturaFalha" value={entidade?.efaTemperaturaFalha}   />
 
                                                     </span>
 
@@ -691,6 +731,19 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
             
                 
                 </Dialog>
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.efaCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
+
+                
+
+
+                </form>
+
+                
                 
             </div>
        
