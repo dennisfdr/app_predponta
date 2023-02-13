@@ -118,6 +118,44 @@ const items = [
       ]
    },
    {
+      label:'Medições',
+      icon:'pi pi-fw pi-calendar',
+      items:[
+         
+            {
+               label:'Medição',
+               icon:'pi pi-sitemap pi-align-right',
+               command:() => (Router.push("/cadastros/medicao"))
+            },
+
+            {
+               label:'Equipamento',
+               icon:'pi pi-sitemap pi-align-right',
+               command:() => (Router.push("/cadastros/equipamento"))
+            },
+
+            {
+               label:'Inspecao Acústica Local',
+               icon:'pi pi-sitemap pi-align-right',
+               command:() => (Router.push("/cadastros/inspecao_acustica_local"))
+            },
+
+            {
+               label:'Relatório de Intervenção',
+               icon:'pi pi-sitemap pi-align-right',
+               command:() => (Router.push("/cadastros/relatorio_intervencao"))
+            },
+
+            {
+               label:'Falha',
+               icon:'pi pi-sitemap pi-align-right',
+               command:() => (Router.push("/cadastros/falha"))
+            },
+         
+      ]
+   },
+
+   {
       label:'Termográfica',
       icon:'pi pi-fw pi-pencil',
       items:[
@@ -173,43 +211,7 @@ const items = [
          
       ]
    },
-   {
-      label:'Medições',
-      icon:'pi pi-fw pi-calendar',
-      items:[
-         
-            {
-               label:'Medição',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/medicao"))
-            },
-
-            {
-               label:'Equipamento',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/equipamento"))
-            },
-
-            {
-               label:'Inspecao Acústica Local',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/inspecao_acustica_local"))
-            },
-
-            {
-               label:'Relatório de Intervenção',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/relatorio_intervencao"))
-            },
-
-            {
-               label:'Falha',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/falha"))
-            },
-         
-      ]
-   },
+   
 
    {
       label:'Análise de óleos',

@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useMedicaoService } from 'app/services'
+    useMedicaoService,
+    useMedicaoAnaliseVibracaoService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -96,6 +97,15 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<MedicaoAnaliseVibracao[]>([]);
+    const [ entidade, setEntidade ] = useState<MedicaoAnaliseVibracao>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useMedicaoAnaliseVibracaoService();
     
 
     
@@ -107,34 +117,105 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
 
-      
+    formik.setFieldValue("mavCodigo", '')
+    formik.setFieldValue("mavCodigo", '' )
+    
+    
+}
 
-    /*Carregando Equipamentos*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<MedicaoAnaliseVibracao[]>>
-    ('/medicaoanalisevibracao', url => httpClient.get(url) )
 
-    useEffect( () => {
-        setListaMedicaoAnaliseVibracao(result?.data || [])
-    }, [result])
+/*Carregando Empresas/Setor*/
+const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
+
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.mavCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: MedicaoAnaliseVibracao) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("mavCodigo", entidade.mavCodigo)
+    formik.setFieldValue("mavCodigo", entidade.mavCodigo )
+    
+    
+    
+}
+
+const consultaEntidade = (entidade: MedicaoAnaliseVibracao) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<MedicaoAnaliseVibracao>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -171,14 +252,30 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: MedicaoAnaliseVibracao) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
+    }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
     }
 
     
@@ -241,6 +338,8 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Análise de Vibracao:</span>
                         <form onSubmit={formik.handleSubmit}>
 
+                                <Toast ref={toast} />
+
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -250,7 +349,7 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -350,13 +449,17 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
                                            
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaMedicaoAnaliseVibracao} selection={selectedMedicaoAnaliseVibracao} onSelectionChange={(e) => setSelectedMedicaoAnaliseVibracao(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedMedicaoAnaliseVibracao} onSelectionChange={(e) => setSelectedMedicaoAnaliseVibracao(e.value)}
                                 dataKey="mavCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -364,7 +467,7 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="mavCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="mavData" header="Data" sortable style={{ minWidth: '12rem' }}></Column>
-                                <Column field="medicao.mdeCodigo" header="Medicao" sortable style={{ minWidth: '10rem' }}></Column>
+                                <Column field="medicao.medCodigo" header="Medicao" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
                             </DataTable>
@@ -373,6 +476,37 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
 
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Medição" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                <div className="col-2">
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="mavCodigo">Codigo</label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Medição" id="mavCodigo" name="mavCodigo" value={entidade?.mavCodigo} />
+
+                                    </span>
+
+                                </div>
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="mavData">Data* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Data" id="mavData" name="mavData" value={entidade?.mavData}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+                                                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.mavCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                         
 

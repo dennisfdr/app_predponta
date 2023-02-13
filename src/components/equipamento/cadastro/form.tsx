@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useMedicaoService } from 'app/services'
+    useMedicaoService,
+    useEquipamentoService } from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -103,6 +104,15 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<Equipamento[]>([]);
+    const [ entidade, setEntidade ] = useState<Equipamento>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useEquipamentoService();
     
 
     
@@ -114,34 +124,114 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
+    formik.setFieldValue("equCodigo", '')
+    formik.setFieldValue("equDescricao", '')
+    formik.setFieldValue("equArquivoHtml", '')
+    formik.setFieldValue("equDataCalibracao", '')
+    formik.setFieldValue("equIt", '')
+    formik.setFieldValue("equLaboratorio", '')
+    formik.setFieldValue("equNumeroCertificado", '')
+    formik.setFieldValue("equProximaCalibracao", '')
+    formik.setFieldValue("equRi", '')
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
+}
 
-      
 
-    /*Carregando Equipamentos*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<Equipamento[]>>
-    ('/equipamentos', url => httpClient.get(url) )
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
 
-    useEffect( () => {
-        setListaEquipamento(result?.data || [])
-    }, [result])
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.equCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: Equipamento) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    formik.setFieldValue("equCodigo", entidade.equCodigo)
+    formik.setFieldValue("equDescricao", entidade.equDescricao)
+    formik.setFieldValue("equArquivoHtml", entidade.equArquivoHtml)
+    formik.setFieldValue("equDataCalibracao", entidade.equDataCalibracao)
+    formik.setFieldValue("equIt", entidade.equIt)
+    formik.setFieldValue("equLaboratorio", entidade.equLaboratorio)
+    formik.setFieldValue("equNumeroCertificado", entidade.equNumeroCertificado)
+    formik.setFieldValue("equProximaCalibracao", entidade.equProximaCalibracao)
+    formik.setFieldValue("equRi", entidade.equRi)
+    
+}
+
+const consultaEntidade = (entidade: Equipamento) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -178,14 +268,30 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: Equipamento) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
+    }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
     }
 
     
@@ -247,7 +353,7 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Equipamentos:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                         <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -257,7 +363,7 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -435,7 +541,7 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
                                             <div className="col-4">
 
                                                     <span className="ml-2">
-                                                        <label style={{ color: "white" }} htmlFor="equProximaCalibracao">Data Calibracao*</label><br></br>
+                                                        <label style={{ color: "white" }} htmlFor="equProximaCalibracao">Data Próxima Calibracao*</label><br></br>
                                                         <Calendar  id="equProximaCalibracao" name="equProximaCalibracao" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
                                 
 
@@ -453,13 +559,17 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
                                            
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaEquipamento} selection={selectedEquipamento} onSelectionChange={(e) => setSelectedEquipamento(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedEquipamento} onSelectionChange={(e) => setSelectedEquipamento(e.value)}
                                 dataKey="equCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -467,14 +577,10 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="equCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="equDescricao" header="Descrição" sortable style={{ minWidth: '12rem' }}></Column>
-                                <Column field="equAquivoHtml" header="Arquivo Html" sortable style={{ minWidth: '12rem' }}></Column>
-                                <Column field="equRi" header="Ri" sortable style={{ minWidth: '12rem' }}></Column>
-                                <Column field="equIt" header="It" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="equLaboratorio" header="Laboratorio" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="equNumeroCertificado" header="Numero Certificado" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="equDataCalibracao" header="Data Calibracao" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="equProximaCalibracao" header="ProximaCalibracao" sortable style={{ minWidth: '16rem' }}></Column>         
-                                <Column field="medicao.mdeCodigo" header="Medicao" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
                             </DataTable>
@@ -483,6 +589,115 @@ export const EquipamentoForm: React.FC<EquipamentoFormProps> = ({
 
 
                         </div>
+
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Equipaemtnos" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                                <div className="col-2">
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equCodigo">Codigo</label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Equipaemnto" id="equCodigo" name="equCodigo" value={entidade?.equCodigo} />
+
+                                    </span>
+
+                                </div>
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="medData">Arquivo Htmal* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a ArquivoHtmal" id="equArquivoHtml" name="equArquivoHtml" value={entidade?.equArquivoHtml}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equDataCalibracao">Data Calibração* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Data Calibração" id="equDataCalibracao" name="equDataCalibracao" value={entidade?.equDataCalibracao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equDescricao">Descrição* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Descrição" id="equDescricao" name="equDescricao" value={entidade?.equDescricao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equIt">IT* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a RI" id="equIt" name="equIt" value={entidade?.equIt}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+
+
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equLaboratorio">Laboratório* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Laboratório" id="equLaboratorio" name="equLaboratorio" value={entidade?.equLaboratorio}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equNumeroCertificado">No. Certificado* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Número Certificado" id="equNumeroCertificado" name="equNumeroCertificado" value={entidade?.equNumeroCertificado}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equProximaCalibracao">Próxima Calibração* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Próxima Calibração" id="equProximaCalibracao" name="equProximaCalibracao" value={entidade?.equProximaCalibracao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="equRi">RI* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a RI" id="equRi" name="equRi" value={entidade?.equRi}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+
+
+
+                                
+                                                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.equCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
 
                         
 
