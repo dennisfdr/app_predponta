@@ -127,6 +127,15 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
 
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
+
+    /*Copiar estas variávies*/
+    const [ entidades, setEntidades ] = useState<AnaliseOleo[]>([]);
+    const [ entidade, setEntidade ] = useState<AnaliseOleo>(null);
+    const [mostraBotao, setMostraBotao] = useState(false);
+    const [deleteDialog, setDeleteDialog] = useState(false);
+    const [entidadeDialog, setEntidadeDialog] = useState(false);
+    const [submitted, setSubmitted] = useState(false);
+    const entidadeService = useAnaliseOleoService();
     
 
     
@@ -138,34 +147,157 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
     })
 
 
-/*Carregando Empresas/Setor*/
-      useEffect(() => { 
-        getData();
-        
-      }, []); 
+/* Limpar formulário*/ 
+const limparFormulario = () => {
+
     
-      const getData = () => {
-        fetch("http://localhost:8080/empresas") 
-          .then((response) => response.json()) 
-          .then((responseJson) => { 
-            setListaEmpresas(responseJson); 
-            setListaSetor(null);
-          }) 
-          .catch((error) => { 
-            console.error(error); 
-          }); 
-      };
 
-      
+    formik.setFieldValue("anoCodigo", '')
+    formik.setFieldValue("anoNumero", '')
+    formik.setFieldValue("anoTecnico", '')
+    formik.setFieldValue("anoContaminacao", '')
+    formik.setFieldValue("anoDesgaste", '')
+    formik.setFieldValue("anoViscosidade", '')
+    formik.setFieldValue("anoObservacao", '')
+    formik.setFieldValue("anoNumeroDocumentoAnalise", '')
+    formik.setFieldValue("anoNumeroOs", '')
+    formik.setFieldValue("anoPosHaviaFalha", '')
+    formik.setFieldValue("anoPosHaviaFalhaObs", '')
+    formik.setFieldValue("anoPosDiagnosticoFalha", '')
+    formik.setFieldValue("anoPosDiagnosticoFalhaObs", '')
+    formik.setFieldValue("anoPosTrabalhoAlem", '')
+    formik.setFieldValue("anoPosTrabalhoAlemObs", '')
+    formik.setFieldValue("anoPosDataIntervencao", '')
+    formik.setFieldValue("anoPosTempoExecucao", '')
+    formik.setFieldValue("anoPosResponsavel", '')
+    formik.setFieldValue("anoPosAvaliado", '')
+    formik.setFieldValue("anoPosStatusAvaliacao", '')
+    formik.setFieldValue("anoPosBaixada", '')
+    formik.setFieldValue("anoPosBaixadaObservacao", '')
+    formik.setFieldValue("anoDateInsert", '')
+    formik.setFieldValue("anoUserInsert", '')
+    formik.setFieldValue("anoPosNumeroOs", '')
+    formik.setFieldValue("anoNomeArquivo", '')
+    formik.setFieldValue("anoArquivo", '')
+    
+}
 
-    /*Carregando Analise de Oleo*/  
 
-    const { data: result, error } = useSWR<AxiosResponse<AnaliseOleo[]>>
-    ('/analiseoleo', url => httpClient.get(url) )
 
-    useEffect( () => {
-        setListaAnaliseOleo(result?.data || [])
-    }, [result])
+/*Carregando Empresas/Setor*/
+  const getEmpresas = () => {
+    empresaService.listar().then(response => setListaEmpresas(response))
+    setListaSetor(null);
+  }; 
+
+  useEffect(() => { 
+   
+    getEmpresas();
+    
+  }, []); 
+
+
+ /* Métodos do CRUD (listar, gravar, editar, excluir)*/ 
+
+const getEntidades = () => {
+    entidadeService.listar().then(response => setEntidades(response))
+  }; 
+
+  useEffect(() => { 
+   
+    getEntidades();
+    
+  }, []);
+
+  const salvar = () => { 
+    entidadeService.salvar(formik.values).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário*/
+            limparFormulario(); 
+            getEntidades();
+            
+        
+
+        })       
+    }
+
+const alterar = async () =>  {
+    entidadeService.atualizar(formik.values).then(response => {
+        toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 });
+        /*Limpando formulário*/
+        limparFormulario();
+        /*Alterando Caption Botão*/
+        setMostraBotao(false);
+
+        getEntidades();
+    })
+}
+
+const deletar = async () =>  {
+    entidadeService.deletar(entidade.anoCodigo).then(response => {
+        setDeleteDialog(false);  
+        toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
+        getEntidades();
+        
+    })
+}
+
+const editEntidade = (entidade: AnaliseOleo) => {
+
+    /*Altera caption do botão para ALTERAR*/
+    setMostraBotao(true);
+
+    /* Campos do formulário*/
+
+    
+
+    formik.setFieldValue("anoCodigo", entidade.anoCodigo)
+    formik.setFieldValue("anoNumero", entidade.anoNumero )
+    formik.setFieldValue("anoTecnico" , entidade.anoTecnico )
+    formik.setFieldValue("anoContaminacao" , entidade.anoContaminacao )
+    formik.setFieldValue("anoDesgaste" , entidade.anoDesgaste )
+    formik.setFieldValue("anoViscosidade" , entidade.anoViscosidade )
+    formik.setFieldValue("anoObservacao" , entidade.anoObservacao )
+    formik.setFieldValue("anoNumeroDocumentoAnalise" , entidade.anoNumeroDocumentoAnalise )
+    formik.setFieldValue("anoNumeroOs" , entidade.anoNumeroOs )
+    formik.setFieldValue("anoPosHaviaFalha" , entidade.anoPosHaviaFalha )
+    formik.setFieldValue("anoPosHaviaFalhaObs" , entidade.anoPosHaviaFalhaObs )
+    formik.setFieldValue("anoPosDiagnosticoFalha" , entidade.anoPosDiagnosticoFalha )
+    formik.setFieldValue("anoPosDiagnosticoFalhaObs" , entidade.anoPosDiagnosticoFalhaObs )
+    formik.setFieldValue("anoPosTrabalhoAlem" , entidade.anoPosTrabalhoAlem )
+    formik.setFieldValue("anoPosTrabalhoAlemObs" , entidade.anoPosTrabalhoAlemObs )
+    formik.setFieldValue("anoPosDataIntervencao" , entidade.anoPosDataIntervencao )
+    formik.setFieldValue("anoPosTempoExecucao" , entidade.anoPosTempoExecucao )
+    formik.setFieldValue("anoPosResponsavel" , entidade.anoPosResponsavel )
+    formik.setFieldValue("anoPosAvaliado" , entidade.anoPosAvaliado )
+    formik.setFieldValue("anoPosStatusAvaliacao" , entidade.anoPosStatusAvaliacao )
+    formik.setFieldValue("anoPosBaixada" , entidade.anoPosBaixada )
+    formik.setFieldValue("anoPosBaixadaObservacao" , entidade.anoPosBaixadaObservacao )
+    formik.setFieldValue("anoDateInsert" , entidade.anoDateInsert )
+    formik.setFieldValue("anoUserInsert" , entidade.anoUserInsert )
+    formik.setFieldValue("anoPosNumeroOs" , entidade.anoNumeroOs )
+    formik.setFieldValue("anoNomeArquivo" , entidade.anoNomeArquivo )
+    formik.setFieldValue("anoArquivo" , entidade.anoArquivo )
+
+    
+    
+    
+}
+
+const consultaEntidade = (entidade: AnaliseOleo) => {
+
+    setEntidade({...entidade})
+    setEntidadeDialog(true);
+    setMostraBotao(false);  
+  
+}
+
+const confirmDelete = (entidade: React.SetStateAction<AnaliseOleo>) => {
+    setEntidade(entidade);
+    setDeleteDialog(true);
+}
 
     
 
@@ -202,14 +334,30 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Empresa) => {
+    const actionBodyTemplate = (rowData: AnaliseOleo) => {
         return (
             <React.Fragment> 
-                    
-                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2"   />
-                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger"  />
+                    <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
+                    <Button icon="pi pi-pencil" className="p-button-rounded p-button-success mr-2" tooltip='Editar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => editEntidade(rowData)}/>
+                    <Button icon="pi pi-trash" className="p-button-rounded p-button-danger" tooltip='Deletar' tooltipOptions={{position: 'bottom'}} type="button" onClick={() => confirmDelete(rowData)} />
             </React.Fragment>
         );
+    }
+
+    const hideDeleteDialog = () => {
+        setDeleteDialog(false);
+    }
+
+    const deleteDialogFooter = (
+        <React.Fragment>
+            <Button label="No" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Yes" icon="pi pi-check" className="p-button-text" onClick={deletar} />
+        </React.Fragment>
+    );
+
+    const hideDialog = () => {
+        setSubmitted(false);
+        setEntidadeDialog(false);
     }
 
     
@@ -266,7 +414,7 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                 <div className="surface-card border-round shadow-2 p-4">
                         <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Análise de Óleo:</span>
                         <form onSubmit={formik.handleSubmit}>
-
+                             <Toast ref={toast} />
                             
                                         <div className="grid">
                                             <div className="col-6">
@@ -276,7 +424,7 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange} 
-                                                    optionLabel="empCodigo" 
+                                                    optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 
                                             </div> 
@@ -359,18 +507,7 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                                     
                                             </div>
 
-                                            <div className="col-4">
-
-                                                    <span className="ml-2">
-                                                        <label style={{ color: "white" }} htmlFor="anoArquivo">Arquivo*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite o Arquivo" id="anoArquivo" name="anoArquivo" value={formik.values.anoArquivo}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                                    </span>
-
-                                                    <small className="p-error p-d-block">
-                                                        {formik.touched && formik.errors.anoArquivo}
-                                                    </small>
-                                            </div>
+                                            
 
                                             <div className="col-4">
 
@@ -722,20 +859,7 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                                                     
                                            </div>
 
-                                           <div className="col-4">
-
-                                                    <span className="ml-2">
-                                                        <label style={{ color: "white" }} htmlFor="anoUserInsert">User Insert*</label>
-                                                        <InputText style={{ width: "100%" }}  placeholder="Digite User Insert" id="anoUserInsert" name="anoUserInsert" value={formik.values.anoUserInsert}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
-
-                                                    </span>
-
-                                                    <small className="p-error p-d-block">
-                                                        {formik.touched && formik.errors.anoUserInsert}
-                                                    </small>
-
-                                                    
-                                           </div>
+                                           
 
                                            <div className="col-4">
 
@@ -760,13 +884,17 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                                             
                                     </div>
 
-                                    <Button  type="submit" label="Salvar" icon="pi pi-check" />
+                                    {!mostraBotao &&
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
+                                    } {mostraBotao &&
+                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                    } 
                                 
 
                                 
                         <div>
 
-                            <DataTable ref={dt} value={listaAnaliseOleo} selection={selectedAnaliseOleo} onSelectionChange={(e) => setSelectedAnaliseOleo(e.value)}
+                            <DataTable ref={dt} value={entidades} selection={selectedAnaliseOleo} onSelectionChange={(e) => setSelectedAnaliseOleo(e.value)}
                                 dataKey="anoCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
@@ -781,6 +909,345 @@ export const AnaliseOleoForm: React.FC<AnaliseOleoFormFormProps> = ({
                             </DataTable>
 
                         </div>
+                        <Dialog visible={entidadeDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Análise de öleo" modal className="p-fluid" footer={entidadeDialog} onHide={hideDialog}>
+             
+                        <div className="col-2">
+
+                          
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoArquivo">Arquivo*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Arquivo" id="anoArquivo" name="anoArquivo" disabled value={entidade?.anoArquivo}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                          
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoContaminacao">Contaminação*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite a Contaminação" id="anoContaminacao" name="anoContaminacao" disabled value={entidade?.anoContaminacao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+
+                            </div>
+
+
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoDateInsert">Data Insert*</label><br></br>
+                                <Calendar  id="anoDateInsert" name="anoDateInsert" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                            </span>
+
+                           
+                            </div>
+
+
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoDesgaste">Desgaste*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Desgaste" id="anoDesgaste" name="anoDesgaste" disabled value={entidade?.anoDesgaste}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoNomeArquivo">Nome Arquivo*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Nome Arquivo" id="anoNomeArquivo" name="anoNomeArquivo" disabled value={entidade?.anoNomeArquivo}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                          
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoNumero">Número*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Número" id="anoNumero" name="anoNumero" disabled value={entidade?.anoNumero}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoNumeroDocumentoAnalise">Num. Doc. Análise*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Num. Doc. Análise" id="anoNumeroDocumentoAnalise" name="anoNumeroDocumentoAnalise" disabled value={entidade?.anoNumeroDocumentoAnalise}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoNumeroOs">Num. OS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Num. OS" id="anoNumeroOs" name="anoNumeroOs" disabled value={entidade?.anoNumeroOs}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                          
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoObservacao">Observação*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite a Observação" id="anoObservacao" name="anoObservacao" disabled value={entidade?.anoObservacao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosAvaliado">Pos Avaliado*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Pos Avaliado" id="anoPosAvaliado" name="anoPosAvaliado" disabled value={entidade?.anoPosAvaliado}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosBaixada">Pos Baixada*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Pos Baixada" id="anoPosBaixada" name="anoPosBaixada" disabled value={entidade?.anoPosBaixada}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosBaixadaObservacao">Pos Baixada OBS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Baixada OBS" id="anoPosBaixadaObservacao" name="anoPosBaixadaObservacao" disabled value={entidade?.anoPosBaixadaObservacao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosDataIntervencao">Data Intervenção*</label><br></br>
+                                <Calendar  id="anoPosDataIntervencao" name="anoPosDataIntervencao" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
+
+                            </span>
+
+                           
+                            </div>
+
+
+
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosDiagnosticoFalha">Pos Diag. Falha*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Diag. Falha" id="anoPosDiagnosticoFalha" name="anoPosDiagnosticoFalha" disabled value={entidade?.anoPosDiagnosticoFalha}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosDiagnosticoFalhaObs">Pos Diag. Falha OBS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Diag. Falha OBS" id="anoPosDiagnosticoFalhaObs" name="anoPosDiagnosticoFalhaObs" disabled value={entidade?.anoPosDiagnosticoFalhaObs}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+                            </div>
+
+                            <div className="col-4">
+
+                           
+                           
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosHaviaFalhaObs">Pos Havia Falha OBS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Havia Falha OBS" id="anoPosHaviaFalhaObs" name="anoPosHaviaFalhaObs" disabled value={entidade?.anoPosHaviaFalhaObs}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosNumeroOs">Pos Num. OS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Num. OS" id="anoPosNumeroOs" name="anoPosNumeroOs" disabled value={entidade?.anoPosNumeroOs}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosResponsavel">Pos Responsável*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Responsável" id="anoPosResponsavel" name="anoPosResponsavel" disabled value={entidade?.anoPosResponsavel}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosStatusAvaliacao">Pos Status Avaliação*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Status Avaliação" id="anoPosStatusAvaliacao" name="anoPosStatusAvaliacao" disabled value={entidade?.anoPosStatusAvaliacao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                           
+
+
+                            </div>
+
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosTempoExecucao">Pos Tempo Exec.*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Tempo Exec." id="anoPosTempoExecucao" name="anoPosTempoExecucao" disabled value={entidade?.anoPosTempoExecucao}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+                            </div>
+
+                            <div className="col-4">
+
+                            
+
+                            
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoPosTrabalhoAlemObs">Pos Trab. Além OBS*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite Pos Trab. Além OBS" id="anoPosTrabalhoAlemObs" name="anoPosTrabalhoAlemObs" disabled value={entidade?.anoPosTrabalhoAlemObs}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoTecnico">Técnico*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite o Técnico" id="anoTecnico" name="anoTecnico" disabled value={entidade?.anoTecnico}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoUserInsert">User Insert*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite User Insert" id="anoUserInsert" name="anoUserInsert" disabled value={entidade?.anoUserInsert}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+                            </div>
+
+                            <div className="col-4">
+
+                            <span className="ml-2">
+                                <label style={{ color: "white" }} htmlFor="anoViscosidade">Viscosidade*</label>
+                                <InputText style={{ width: "100%" }}  placeholder="Digite a Viscosidade" id="anoViscosidade" name="anoViscosidade" disabled value={entidade?.anoViscosidade}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                            </span>
+
+                            
+
+
+                            </div>
+
+                                                
+                        </Dialog>
+
+                        <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+                            <div className="flex align-items-center justify-content-center">
+                                <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.anoCodigo}</b>?</span>}
+                            </div>
+                        </Dialog>
+
 
                 
 

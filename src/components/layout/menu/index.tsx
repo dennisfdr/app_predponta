@@ -218,7 +218,7 @@ const items = [
       icon:'pi pi-fw pi-calendar',
       items:[
          {
-            label:'Análise Oleo',
+            label:'Geral',
             icon:'pi pi-fw pi-pencil',
             command:() => (Router.push("/cadastros/analise_oleo"))
             
