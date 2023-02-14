@@ -2,6 +2,6 @@ import Axios, {AxiosInstance} from "axios";
 
 export const httpClient: AxiosInstance = Axios.create ({
     //baseURL:"http://localhost:8080/"
-   baseURL: "http://207.244.238.40:14333/"
+    baseURL: "http://207.244.238.40:14333/"
     
 })
