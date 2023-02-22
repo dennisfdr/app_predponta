@@ -45,6 +45,7 @@ export const useInspecaoTermograficaPecaService = () => {
 
     const listar = async () : Promise<InspecaoTermograficaPeca[]> => {
         const response: AxiosResponse<InspecaoTermograficaPeca[]> = await httpClient.get(resourceURL)
+        console.log(response.data)
         return response.data
     }
 

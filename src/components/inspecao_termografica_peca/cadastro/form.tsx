@@ -1,5 +1,5 @@
 
-import { useFormik } from 'formik'
+import { replace, useFormik } from 'formik'
 import { 
     AutoComplete, 
     AutoCompleteChangeParams, 
@@ -54,6 +54,7 @@ const formScheme: InspecaoTermograficaPeca = {
     
     
     inspecaoTermografica: null
+   
     
 
     
@@ -117,6 +118,7 @@ export const InspecaoTermograficaPecaForm: React.FC<InspecaoTermograficaPecaForm
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useInspecaoTermograficaPecaService();
+    const [iteCodigoAlterado, setIteCodigoAlterado] = useState(null);
     
 
     
@@ -205,14 +207,73 @@ const editEntidade = (entidade: InspecaoTermograficaPeca) => {
 
     /*Altera caption do botão para ALTERAR*/
     setMostraBotao(true);
+   
 
     /* Campos do formulário*/
+   
+    formik.setFieldValue("itpCodigo", entidade.itpCodigo) 
+    //formik.setFieldValue("inspecaoTermografica", entidade.inspecaoTermografica)
+    
+    setInspecaoTermografica(entidade.inspecaoTermografica)
+    setMedicao(entidade.inspecaoTermografica.medicao)
+    setComponente(entidade.inspecaoTermografica.medicao.componente)
+    setMaquinaEquipamento(entidade?.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO)
+    setMaquina(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina)
+    setSetor(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor)  
+    setEmpresa(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor.empresa)
+    
 
-    formik.setFieldValue("itpCodigo", entidade.itpCodigo)
+    
+    
+    
+    
+    /*if(inspecaoTermografica) {
+
+            setMedicao(inspecaoTermografica.medicao)
+    } 
+      
+            if (medicao) {
+                console.log("Entrou2")
+                setComponente(medicao.componente)
+               
+
+            } 
+
+            if (componente) {
+                console.log("Entrou3")
+                setMaquinaEquipamento(componente.maquinaequipamentoMAECODIGO)
+
+            }
+
+            if (maquinaEquipamento) {
+
+                console.log("Entrou4")
+                
+                setMaquina(maquinaEquipamento.maquina)
+
+            }
+            if (maquina) {
+                console.log("Entrou5")
+                setSetor(maquina.setor)
+
+            }
+
+            if (setor) {
+                console.log("Entrou6")
+                setEmpresa(setor.empresa)
+                
+
+            } */
+
+       
     
     
     
 }
+
+
+
+
 
 const consultaEntidade = (entidade: InspecaoTermograficaPeca) => {
 
@@ -357,8 +418,9 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={empresa} 
+                                                    value={empresa?.empCodigo}
                                                     options={listaEmpresas}
+                                                    editable
                                                     onChange={handleEmpresaChange} 
                                                     optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
@@ -368,9 +430,10 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="setor">Setor: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={setor}
+                                                    value={setor?.setCodigo}
                                                     options={listaSetor} 
                                                     onChange={handleSetorChange} 
+                                                    editable
                                                     optionLabel="setNome" 
                                                     placeholder="Selecione o Setor" 
                                                     />
@@ -382,9 +445,10 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="maquina">Maquina: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={maquina} 
+                                                    value={maquina?.maqCodigo} 
                                                     options={listaMaquina} 
                                                     onChange={handleMaquinaChange} 
+                                                    editable
                                                     optionLabel="maqNome" 
                                                     placeholder="Selecione a Máquina" 
                                                     />
@@ -395,9 +459,10 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="maquina_equipamento">MaquinaEquipamento: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={maquinaEquipamento} 
+                                                    value={maquinaEquipamento?.maeCodigo} 
                                                     options={listaMaquinaEquipamento} 
                                                     onChange={handleMaquinaEquipamentoChange} 
+                                                    editable
                                                     optionLabel="maeNome" 
                                                     placeholder="Selecione a MáquinaEquipamento" />
 
@@ -407,9 +472,10 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="componente">Componente: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={componente} 
+                                                    value={componente?.comCodigo} 
                                                     options={listaComponente} 
                                                     onChange={handleComponenteChange} 
+                                                    editable
                                                     optionLabel="comNome" 
                                                     placeholder="Selecione o Componente" />
 
@@ -419,10 +485,11 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="medicao">Medicao: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={medicao} 
+                                                    value={medicao?.medCodigo} 
                                                     options={listaMedicao} 
                                                     onChange={handleMedicaoChange} 
-                                                    optionLabel="medCodigo" 
+                                                    optionLabel="medCodigo"
+                                                    editable 
                                                     placeholder="Selecione a Medicao" />
 
                                             </div> 
@@ -431,11 +498,12 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="inspecaoTermografica">Inspecao Termográfica: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={inspecaoTermografica} 
-                                                    options={listaInspecaoTermografica} 
+                                                    value={inspecaoTermografica?.iteCodigo} 
+                                                    options={listaInspecaoTermografica}
                                                     onChange={handleInspecaoTermograficaChange} 
-                                                    optionLabel="iteCodigo" 
-                                                    placeholder="Selecione a MedicaoAnaliseVibracao" />
+                                                    optionLabel="iteCodigo"
+                                                    editable 
+                                                    placeholder="Selecione a Inspeção Termográfica" />
 
                                             </div> 
                                             

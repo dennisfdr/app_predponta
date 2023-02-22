@@ -200,6 +200,8 @@ const editEntidade = (entidade: InspecaoAcusticaLocal) => {
     formik.setFieldValue("ialCodigo", entidade.ialCodigo)
     formik.setFieldValue("ialDescricao", entidade.ialDescricao )
     formik.setFieldValue("ialStatus", entidade.ialStatus )
+    formik.setFieldValue("medicao", entidade.medicao )
+    
     
     
     
