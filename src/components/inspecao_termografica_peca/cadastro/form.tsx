@@ -1,4 +1,5 @@
 
+ // @ts-nocheck
 import { replace, useFormik } from 'formik'
 import { 
     AutoComplete, 
@@ -168,6 +169,10 @@ const getEntidades = () => {
     
   }, []);
 
+
+ 
+
+
   const salvar = () => { 
     entidadeService.salvar(formik.values).then(response => {
             setEntidade(response); 
@@ -207,17 +212,18 @@ const editEntidade = (entidade: InspecaoTermograficaPeca) => {
 
     /*Altera caption do botão para ALTERAR*/
     setMostraBotao(true);
+    setEntidade(entidade)
    
 
     /* Campos do formulário*/
    
     formik.setFieldValue("itpCodigo", entidade.itpCodigo) 
     //formik.setFieldValue("inspecaoTermografica", entidade.inspecaoTermografica)
-    
-    setInspecaoTermografica(entidade.inspecaoTermografica)
+   
+    setInspecaoTermografica(entidade.inspecaoTermografica) 
     setMedicao(entidade.inspecaoTermografica.medicao)
     setComponente(entidade.inspecaoTermografica.medicao.componente)
-    setMaquinaEquipamento(entidade?.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO)
+    setMaquinaEquipamento(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO)
     setMaquina(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina)
     setSetor(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor)  
     setEmpresa(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor.empresa)
@@ -418,7 +424,7 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
-                                                    value={empresa?.empCodigo}
+                                                    value={empresa?.empNome}
                                                     options={listaEmpresas}
                                                     editable
                                                     onChange={handleEmpresaChange} 
