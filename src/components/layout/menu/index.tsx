@@ -179,11 +179,11 @@ const items = [
 
             
 
-            {
+           /* {
                label:'Inspecao Acústica Local',
                icon:'pi pi-sitemap pi-align-right',
                command:() => (Router.push("/cadastros/inspecao_acustica_local"))
-            },
+            },*/
 
             {
                label:'Relatório de Intervenção',
