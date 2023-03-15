@@ -58,7 +58,7 @@ const formScheme: Equipamento = {
     equNumeroCertificado:'',
     equDataCalibracao:'',
     equProximaCalibracao:'',
-    medicao: null
+   // medicao: null
     
 }
 
@@ -355,8 +355,9 @@ const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
                         <form onSubmit={formik.handleSubmit}>
                          <Toast ref={toast} />
                             
-                                        <div className="grid">
-                                            <div className="col-6">
+                                       
+                                              <div className="grid">
+                                           {/* <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
@@ -428,8 +429,8 @@ const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
                                                     optionLabel="medData" 
                                                     placeholder="Selecione a Medicao" />
 
-                                            </div> 
-                                            
+                                            </div>  */}
+
                                             
                                             
                                             
@@ -472,7 +473,7 @@ const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
                                                     </small>
                                             </div>
 
-                                            <div className="col-4">
+                                            {/*<div className="col-4">
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="equRi">Ri*</label>
@@ -496,7 +497,7 @@ const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
                                                     <small className="p-error p-d-block">
                                                         {formik.touched && formik.errors.equIt}
                                                     </small>
-                                            </div>
+                                        </div>*/}
 
                                             <div className="col-4">
 
@@ -558,12 +559,16 @@ const confirmDelete = (entidade: React.SetStateAction<Equipamento>) => {
                                             
                                            
                                     </div>
+                                
+                                   
 
                                     {!mostraBotao &&
                                         <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
                                     } {mostraBotao &&
                                         <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     } 
+
+                                    
                                 
 
                                 

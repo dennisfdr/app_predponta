@@ -55,7 +55,7 @@ const formScheme: Falha = {
     
     falCodigo:'',
     falDescricao:'',
-    relatorioIntervencao: null
+    //relatorioIntervencao: null
     
 }
 
@@ -343,14 +343,14 @@ const confirmDelete = (entidade: React.SetStateAction<Falha>) => {
         
 
                 <div className="surface-card border-round shadow-2 p-4">
-                        <span className="text-900 text-2xl font-medium mb-4 block">Relatório de Falhas:</span>
+                        <span className="text-900 text-2xl font-medium mb-4 block">Cadastro de Falhas:</span>
                         <form onSubmit={formik.handleSubmit}>
 
                         <Toast ref={toast} />
 
                             
                                         <div className="grid">
-                                            <div className="col-6">
+                                           {/*} <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
@@ -446,7 +446,7 @@ const confirmDelete = (entidade: React.SetStateAction<Falha>) => {
                                                     optionLabel="riCodigo" 
                                                     placeholder="Selecione Relatorio de Intervencao" />
 
-                                            </div> 
+                                             </div> */}
                                             
                                                                   
                                             <div className="col-2">
@@ -460,7 +460,7 @@ const confirmDelete = (entidade: React.SetStateAction<Falha>) => {
                                     
                                             </div>
 
-                                            <div className="col-4">
+                                            <div className="col-2">
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="falDescricao">Descricao*</label>
@@ -496,7 +496,6 @@ const confirmDelete = (entidade: React.SetStateAction<Falha>) => {
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="falCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="falDescricao" header="Descricao" sortable style={{ minWidth: '16rem' }}></Column>         
-                                <Column field="relatorioIntervencao" header="Relatorio Intervencao" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
                             </DataTable>

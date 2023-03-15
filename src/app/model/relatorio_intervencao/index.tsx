@@ -34,6 +34,6 @@ export interface RelatorioIntervencao {
     riCustoPreditiva?:'',
     riCustoCorretiva?:'',
     riQuebraEquipamento?:'',
-    inspecaoAcusticaLocal?: null
+    //inspecaoAcusticaLocal?: null
 
 }

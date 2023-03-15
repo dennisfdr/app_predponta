@@ -23,17 +23,78 @@ const items = [
          {
             label:'Empresa',
             icon:'pi pi-fw pi-home',
-            command:() => (Router.push("/cadastros/empresas")),
-         },
-         
+            items:[
+
+                     {
+                        label:'Geral',
+                        icon:'pi pi-fw pi-home',
+                        command:() => (Router.push("/cadastros/empresas")),
+                     },
+
+                     {
+                        label:'Email',
+                        icon:'pi pi-fw pi-home',
+                        command:() => (Router.push("/cadastros/empresaEmail")),
+                     },
+
+                     {
+                        label:'Imagens',
+                        icon:'pi pi-fw pi-home',
+                        command:() => (Router.push("/cadastros/arquivoUpload")),
+                     },
+
+                     {
+                        label:'Setor',
+                        icon:'pi pi-fw pi-home',
+                        command:() => (Router.push("/cadastros/setor")),
+                     },
+                  ]
+         },         
+
          {
+            label:'Usuário',
+            icon:'pi pi-fw pi-trash',
+            
+            
+         },
+         /*{
+            separator:true
+         },*/
+         {
+            label:'Técnico',
+            icon:'pi pi-fw pi-briefcase'
+         },
+
+         {
+            label:'Categoria subComponente',
+            icon:'pi pi-fw pi-briefcase',
+            command:() => (Router.push("/cadastros/sub_componente"))
+
+         },
+
+         {
+            label:'Falha',
+            icon:'pi pi-sitemap pi-align-right',
+            command:() => (Router.push("/cadastros/falha"))
+         },
+
+         {
+            label:'Equipamento',
+            icon:'pi pi-sitemap pi-align-right',
+            command:() => (Router.push("/cadastros/equipamento"))
+         },
+
+
+
+         
+        /* {
             label:'Categoria',
             icon:'pi pi-fw pi-home',
             command:() => (Router.push("/cadastros/categoria")),
-         },
+         },*/
          
          
-         {
+       /*  {
             label:'Máquina',
             icon:'pi pi-fw pi-bars',
             items:[
@@ -94,45 +155,29 @@ const items = [
 
 
                   ]
-               },                 
+               }                 
 
                
 
             ]
-         },
+         },*/
          
          
-         {
-            label:'Usuário',
-            icon:'pi pi-fw pi-trash',
-            
-            
-         },
-         {
-            separator:true
-         },
-         {
-            label:'Técnico',
-            icon:'pi pi-fw pi-briefcase'
-         }
+        
       ]
    },
    {
-      label:'Medições',
+      label:'Análise de Vibração - RI',
       icon:'pi pi-fw pi-calendar',
       items:[
          
             {
-               label:'Medição',
+               label:'Abrir Medição',
                icon:'pi pi-sitemap pi-align-right',
                command:() => (Router.push("/cadastros/medicao"))
             },
 
-            {
-               label:'Equipamento',
-               icon:'pi pi-sitemap pi-align-right',
-               command:() => (Router.push("/cadastros/equipamento"))
-            },
+            
 
             {
                label:'Inspecao Acústica Local',
@@ -146,11 +191,11 @@ const items = [
                command:() => (Router.push("/cadastros/relatorio_intervencao"))
             },
 
-            {
+          /*  {
                label:'Falha',
                icon:'pi pi-sitemap pi-align-right',
                command:() => (Router.push("/cadastros/falha"))
-            },
+            },*/
          
       ]
    },

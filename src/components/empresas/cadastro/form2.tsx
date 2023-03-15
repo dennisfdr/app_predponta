@@ -1,4 +1,4 @@
-import { ArquivoUpload, Empresa, EmpresaEmail, Setor } from "app/model/empresas";
+import { Empresa } from "app/model/empresas";
 import { useFormik } from "formik";
 import { Button } from "primereact/button";
 import { Calendar } from "primereact/calendar";
@@ -58,9 +58,7 @@ const formScheme: Empresa = {
     empPeriodicidadeIt: '',
     empPeriodicidadeRi: '',
     empPeriodicidadeMca: '',
-    empresaEmail: [],
-    imagens: [],
-    setor: [],
+   
     
     
     
@@ -120,9 +118,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
     const service = useEmpresaService();
     const [ empresa, setEmpresa ] = useState<Empresa>();
     const [ empresaSalvo1, setEmpresaSalvo ] = useState<Empresa>();
-    const [ empresasEmails, setEmpresasEmails ] = useState<EmpresaEmail[]>([]);
-    const [ empresasImagens, setEmpresasImagens ] = useState<ArquivoUpload[]>([])
-    const [ empresasSetor, setEmpresasSetor ] = useState<Setor[]>([])
+    
 
 
     const [ empresas, setEmpresas ] = useState<Empresa[]>([]);
@@ -259,7 +255,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
 
 
     
-    const handleAddEmail = () => {
+    /*const handleAddEmail = () => {
            
         const itensAdicionados = formik.values.empresaEmail   
         
@@ -288,7 +284,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
         setIndex(index+1),
         setEmpresasImagens(itensAdicionados)
        
-    }
+    }*/
 
     const converteData = (dataImagem: Date | Date[]) => {
  
@@ -359,7 +355,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
 
 
 
-    const handleAddSetor = () => {
+   /* const handleAddSetor = () => {
            
         const itensAdicionados = formik.values.setor   
         
@@ -372,7 +368,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
         setNomeSetorVisao('')
         setStatusSetorVisao(false) 
         setEmpresasSetor(itensAdicionados)  
-    }
+    }*/
 
     const actionBodyTemplate = (rowData: Empresa) => {
         return (
@@ -435,59 +431,18 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
       };
       
       
-      const uploadImageToClient = (event: any) => {
-        if (event.target.files && event.target.files[0]) {
-            setImages((imageList) => [...imageList, event.target.files[0]]);
-            setImageURLS((urlList) => [
-                ...urlList,
-                URL.createObjectURL(event.target.files[0])
-            ]);
-        }
-    };
+     
 
    
 
 
-      const imageBodyTemplate = (rowData: ArquivoUpload) => {
-           return (
-                    <Zoom>
-                        <img
-                            alt="Clique para exapandir a imagem"
-                            src={rowData.aruArquivo}
-                            width="500"
-                         />
-                    </Zoom>      
-                   
-           ); 
-        }
+      
 
-
-       const handleSalvaEmpresaEmail = () => { 
-           setActiveIndex1(2);
-           service.salvarEmpresaEmail(empresasEmails).then(response => {
-            toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 })
-          
-             })
-        }
-       const handleSalvaImagem = () => {  
-        setActiveIndex1(3);
-        service.salvarEmpresaImagem(empresasImagens).then(response => {
-            toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 })
-          
-        })
-       
-        }
 
        
+       
 
-        const handleSalvaSetor = () => { 
-            setActiveIndex1(0);
-            service.salvarEmpresaSetor(empresasSetor).then(response => {
-                toast.current.show({ severity: 'success', summary: 'Alerado  com sucesso', life: 3000 })
-              
-            });
-           
-        }
+       
 
         
 
@@ -499,7 +454,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
 
     return (
 
-        <div className="tabview-demo">
+       
             <div className="card">
                 <div className="surface-card border-round shadow-2 p-4">
                 <span className="text-900 text-2xl font-medium mb-4 block">Cadatro de Empresas:</span>
@@ -507,8 +462,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
                 <Toast ref={toast} />
 
            
-                    <TabView activeIndex={activeIndex1} onTabChange={(e) => setActiveIndex1(e.index)}>
-                        <TabPanel header="Dados Empresa">
+                    
                             <div className="grid">
                                 <div className="col-10">
 
@@ -602,245 +556,30 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
                                 </div>
 
                             </div>    
-                        </TabPanel>
+                        <div>
 
-                        <TabPanel header="Emails Empresa" disabled>
+                                <DataTable ref={dt} value={empresas} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}
+                                    dataKey="empCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} empresas"
+                                    globalFilter={globalFilter}  header={header} responsiveLayout="stack" stateKey="tablestatedemo-session">
 
-
-                            <div className="col-5">
-                                <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="emailVisao"> Email: *</label> <br></br>
-                                    <InputText style={{ width: "100%" }} placeholder="Digite email da empresa" id="emailVisao" name="emailVisao" value={emailVisao} onChange={e => setEmailVisao(e.target.value)} onBlur={formik.handleBlur} />
-
-                                </span>
-
-                            </div>
-
-                            <div className="col-5">
-                                <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="responsavelVisao">Responsável: *</label>  <br></br>
-                                    <InputText style={{ width: "100%" }} placeholder="Digite responsável pelo email" id="responsavelVisao" name="responsavelVisao" value={responsavelVisao} onChange={e => setResponsavelVisao(e.target.value)} onBlur={formik.handleBlur} />
-
-                                </span>
-
-                            </div>
-
-                            <div className="col-2">
-                                <br></br>
-                                <Button type="button"
-                                    //disabled={disableAddEmailButton()}
-                                    label="Adicionar Email"
-                                    onClick={handleAddEmail} />
-                            </div>
-
-
-                            {formik.values.empresaEmail &&
-                                <div className="col-12">
-                                    <DataTable value={formik.values.empresaEmail} emptyMessage="Nenhum email adicionado.">
-                                        <Column  style={{width: "10%"}} body={(item: EmpresaEmail) => {
-                                            const handleRemoverItem = () => {
-                                                const novaLista = formik.values.empresaEmail.filter(
-                                                    em => em.emeEmail !== item.emeEmail
-                                                );
-                                                formik.setFieldValue("emails", novaLista);
-                                            };
-
-                                            return (
-                                                <Button  icon="pi pi-trash" className="p-button-rounded p-button-danger" type="button" label="Excluir" onClick={handleRemoverItem} />
-                                            );
-                                        } } />
-
-                                        <Column field="emeEmail" header="Email" />
-                                        <Column field="emeResponsavel" header="Responsável" />
-                                        <Column field="empresa.empNome" header="Empresa" />                                  
-
-                                    </DataTable>
-                                </div>}
-
-                                <Button onClick={handleSalvaEmpresaEmail} label="Proximo" />
-                                
-
-                        </TabPanel>
-
-                        <TabPanel header="Imagens Empresa" disabled>
-
-
-                            <div className="col-3">
-                                <span >
-                                    <label style={{ color: "white" }} htmlFor="aruDescricaoVisao"> Descrição: *</label> <br></br>
-                                    <InputText style={{ width: "100%" }} placeholder="Digite descrição imagem" id="aruDescricaoVisao" name="aruDescricaoVisao" value={aruDescricaoVisao} onChange={e => setAruDescricaoVisao(e.target.value)} onBlur={formik.handleBlur} />
-
-                                </span>
-
-                            </div>
-
-                            <div className="col-3">
-                                <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="aruDataVisao">Data: *</label>  <br></br>
-                                    <Calendar style={{ width: "90%" }} placeholder="Digite data da imagem" id="aruDataVisao" name="aruDataVisao" value={aruDataVisao}onChange={e => setAruDataVisao(e.target.value)} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur} />
+                                    <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
+                                    <Column field="empCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
+                                    <Column field="empNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>
                                     
-                                </span>
-
-                            </div>
-
-                            <div className="col-2">
-                                <span className="ml-2">
-                                    
-                                    <input type="file" style={{ display: "none" }} id="aruArquivoVisao" name="aruArquivoVisao" accept="image/*" onChange={uploadImageToClient} />
-                                    <>                   
-                                    <label  className="avatar" htmlFor="aruArquivoVisao"  >Carregar Imagens: *</label>                               
-                                    <style jsx global>{`
-                                        .avatar {
-                                                    border-radius: 5px;
-                                                    border: 1px solid ##F0E68C;
-                                                    padding: 5px 5px;
-                                                    width: 210px;
-                                                    height: 40px;
-                                                    background: khaki;
-                                                    color: black;
-                                                    display: block;
-                                                    fontFamily: Times, Times New Roman, serif;
-                                                    text-align: center; 
-                                                    cursor: pointer;
-                                                    
-                                                    transiction: .5s
-                                                    background-color: #F0E68C;
-                                                }
-                                        .avatar:hover {
-                                            color: red;
-                                            backgroud: white;
-
-                                            
-                                        }     
-                                        `}</style>
-                                    </>  
-                                </span>
-                            </div>
-
-                            <div className="col-2">
-                                <br></br>
-                                <Button type="button"
-                                    //disabled={disableAddEmailButton()}
-                                    label="Adicionar Imagens"
-                                    onClick={handleAddImagens} />
-                            </div>
-
-
-                            {formik.values.imagens.length &&
-                                <div className="col-12">
-                                    <DataTable  dataKey="aruDescricao" value={formik.values.imagens} emptyMessage="Nenhum email adicionado.">
-                                        <Column  style={{width: "10%"}} body={(item: ArquivoUpload) => {
-                                            const handleRemoverItem = () => {
-                                                const novaLista = formik.values.imagens.filter(
-                                                    im => im.aruDescricao !== item.aruDescricao
-                                                );
-                                                formik.setFieldValue("imagens", novaLista);
-                                            };
-
-                                            return (
-                                                <Button  icon="pi pi-trash" className="p-button-rounded p-button-danger" type="button" label="Excluir" onClick={handleRemoverItem} />
-                                            );
-                                        } } />
-
-                                        <Column field="aruDescricao" header="Descricao" />
-                                        <Column field="aruData" header="Data" />
-                                        <Column field="aruArqvuivo" body={imageBodyTemplate} header="Imagem" ></Column>
-                                        <Column field="empresa.empNome" header="Empresa" />
-                                        
-
-                                    </DataTable>
-                                </div>}
-
-                                <Button onClick={handleSalvaImagem} label="Proximo" />
-                                
-                        </TabPanel>
-
-                    
-
-                        <TabPanel header="Setor Empresa" disabled>
-
-                        <div className="col-5">
-                                <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="nomeSetorVisao"> Setor: *</label> <br></br>
-                                    <InputText style={{ width: "100%" }} placeholder="Digite setor da empresa" id="nomeSetorVisao" name="nomeSetorVisao" value={nomeSetorVisao} onChange={e => setNomeSetorVisao(e.target.value)} onBlur={formik.handleBlur} />
-
-                                </span>
-
-                            </div>
-
-                            <div className="col-5">
-                                <span className="ml-2">
-                                    <label style={{ color: "white" }} htmlFor="statusSetorVisao">Ativo: *</label>  <br></br>
-                                    <Checkbox inputId="statusSetorVisao" name="statusSetorVisao" checked={statusSetorVisao} onChange={e => setStatusSetorVisao(e.checked)} />
-                                </span>
-
-                            </div>
-
-                            <div className="col-2">
-                                <br></br>
-                                <Button type="button"
-                                    //disabled={disableAddEmailButton()}
-                                    label="Adicionar Setor"
-                                    onClick={handleAddSetor} />
-                            </div>
-
-
-                            {formik.values.setor &&
-                                <div className="col-12">
-                                    <DataTable value={formik.values.setor} emptyMessage="Nenhum Setor adicionado.">
-                                        <Column  style={{width: "10%"}} body={(item: Setor) => {
-                                            const handleRemoverItem = () => {
-                                                const novaLista = formik.values.setor.filter(
-                                                    em => em.setNome !== item.setNome
-                                                );
-                                                formik.setFieldValue("setor", novaLista);
-                                            };
-
-                                            return (
-                                                <Button  icon="pi pi-trash" className="p-button-rounded p-button-danger" type="button" label="Excluir" onClick={handleRemoverItem} />
-                                            );
-                                        } } />
-
-                                        <Column field="setNome" header="Nome" />
-                                        <Column field="setStatus" header="Ativo" />
-                                        <Column field="empresa.empNome" header="Empresa" />                                  
-
-                                    </DataTable>
-                                </div>}
-
-                                <Button onClick={handleSalvaSetor} label="Finalizar Cadastro Empresa" />
-
+                                    <Column field="empProxMedicaoIt" header="Prox Med It" sortable style={{ minWidth: '10rem' }}></Column>
+                                    <Column field="empProxMedicaoRi" header="Prox Med Ri" sortable style={{ minWidth: '10rem' }}></Column>
+                                    <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                         
-                                
-
-
-                        </TabPanel>    
-
-                    </TabView>
-                <div>
-
-                        <DataTable ref={dt} value={empresas} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}
-                            dataKey="empCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
-                            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords} empresas"
-                            globalFilter={globalFilter}  header={header} responsiveLayout="stack" stateKey="tablestatedemo-session">
-
-                            <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
-                            <Column field="empCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
-                            <Column field="empNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>
-                            
-                            <Column field="empProxMedicaoIt" header="Prox Med It" sortable style={{ minWidth: '10rem' }}></Column>
-                            <Column field="empProxMedicaoRi" header="Prox Med Ri" sortable style={{ minWidth: '10rem' }}></Column>
-                            <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-                
-                            
-                        </DataTable>
+                                    
+                                </DataTable>
 
 
 
 
 
-                </div>
+                        </div>
             </form>
 
             <Dialog visible={empresaDialog} breakpoints={{'960px': '75vw', '640px': '100vw'}} style={{width: '40vw'}} header="Cadastro de Empresa" modal className="p-fluid" footer={empresaDialogFooter} onHide={hideDialog}>
@@ -902,7 +641,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
             </div>
             </div>
 
-        </div>
+       
 
             
         );

@@ -9,7 +9,7 @@ export interface Equipamento{
     equNumeroCertificado?:''
     equDataCalibracao?:''
     equProximaCalibracao?:''
-    medicao?: null
+   // medicao?: null
 
 
 }

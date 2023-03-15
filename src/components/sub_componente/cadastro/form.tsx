@@ -50,7 +50,7 @@ const formScheme: Sub_Componente = {
     scoCodigo:'',
     scoNome: '',
     scoStatus: '',
-    componentePeca: null
+    
     
 }
 
@@ -332,7 +332,7 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
 
                             
                                         <div className="grid">
-                                            <div className="col-6">
+                                          {/*}  <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
@@ -404,7 +404,7 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
                                                     optionLabel="copDescricao" 
                                                     placeholder="Selecione o ComponentePeca" />
 
-                                            </div> 
+                                             </div> */}
                                             
                                             
                                             
@@ -471,7 +471,6 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
                                 <Column field="scoCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="scoNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column>         
                                 <Column field="scoStatus" header="Status" sortable style={{ minWidth: '10rem' }}></Column>
-                                <Column field="componentePeca" header="ComponentePeca" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
                             </DataTable>

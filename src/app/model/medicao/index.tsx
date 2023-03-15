@@ -2,7 +2,7 @@ export interface Medicao{
 
     medCodigo?:'',
     medData?:'',
-    componente?: null;
+    empresa?: null;
 
 
 }

@@ -1,0 +1,1 @@
+export { CadastroEmpresaEmail } from './cadastro'

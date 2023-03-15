@@ -85,7 +85,7 @@ const formScheme: RelatorioIntervencao = {
     riCustoPreditiva:'',
     riCustoCorretiva:'',
     riQuebraEquipamento:'',
-    inspecaoAcusticaLocal: null
+    //inspecaoAcusticaLocal: null
     
 }
 
@@ -147,7 +147,7 @@ export const RelatorioIntervencaoForm: React.FC<RelatorioIntervencaoFormProps> =
     const formik = useFormik<RelatorioIntervencao>({
         onSubmit,
         initialValues: formScheme,
-        validationSchema: validationScheme
+       // validationSchema: validationScheme
     })
 
 
@@ -508,7 +508,7 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
 
                                             </div> 
 
-                                            <div className="col-6">
+                                            {/*<div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="inspecaoAcusticaLocal">InspecaoAcusticaLocal: *</label>
                                                 <Dropdown 
                                                     style={{ width: "100%" }}
@@ -518,7 +518,7 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
                                                     optionLabel="ialCodigo" 
                                                     placeholder="Selecione a Inspecao Acustica Local" />
 
-                                            </div> 
+                                            </div> */}
                                             
                                                                   
                                             <div className="col-2">
@@ -685,7 +685,7 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
                                                     </small>
                                             </div>
 
-                                            <div className="col-4">
+                                            {/*<div className="col-4">
 
                                                     <span className="ml-2">
                                                         <label style={{ color: "white" }} htmlFor="riHaviaFalha">Havia Falha*</label>
@@ -992,7 +992,7 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
                                                     <small className="p-error p-d-block">
                                                         {formik.touched && formik.errors.riQuebraEquipamento}
                                                     </small>
-                                            </div>                 
+                                        </div>  */}               
                                            
                                     </div>
 

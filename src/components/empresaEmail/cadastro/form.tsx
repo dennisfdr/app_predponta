@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useMedicaoService } from 'app/services'
+    useMedicaoService,
+    useEmpresaEmailService } from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -35,24 +36,25 @@ import { getEnvironmentData } from 'worker_threads'
 import { Checkbox } from 'primereact/checkbox'
 import { Toast } from 'primereact/toast'
 import { TabPanel, TabView } from 'primereact/tabview'
-import { Medicao } from 'app/model/medicao'
+import { EmpresaEmail } from 'app/model/empresaEmail'
 import { Calendar } from 'primereact/calendar'
 
 
 
-interface MedicaoFormProps {
-    onSubmit: (medicao: Medicao) => void;
+interface EmpresaEmailFormProps {
+    onSubmit: (empresaEmail: EmpresaEmail) => void;
    
 }
 
-const formScheme: Medicao = {
-    medCodigo:'',
-    medData: '',
+const formScheme: EmpresaEmail = {
+    emeCodigo:'',
+    emeEmail:'',
+    emeResponsavel:'',
     empresa: null
     
 }
 
-export const MedicaoForm: React.FC<MedicaoFormProps> = ({
+export const EmpresaEmailForm: React.FC<EmpresaEmailFormProps> = ({
     onSubmit,
    
 }) => {
@@ -71,7 +73,7 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
     const [ listaMaquina, setListaMaquina ] = useState<Maquina[]>([]);
     const [ listaMaquinaEquipamento, setListaMaquinaEquipamento ] = useState<MaquinaEquipamento[]>([]);
     const [ listaComponente, setListaComponente ] = useState<Componente[]>([]);
-    const [ listaMedicao, setListaMedicao ] = useState<Medicao[]>([]);
+  //  const [ listaMedicao, setListaMedicao ] = useState<Medicao[]>([]);
 
     const [ maquinaEquipamento, setMaquinaEquipamento ] = useState<MaquinaEquipamento>(null);
     const [ componente, setComponente ] = useState<Componente>(null);
@@ -83,7 +85,7 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
     const toast = useRef<Toast>(null);
     const dt = useRef<DataTable>(null);
 
-    const [selectedMedicao, setSelectedMedicao] = useState<Medicao[]>([]);
+    const [selectedEmpresaEmail, setSelectedEmpresaEmail] = useState<EmpresaEmail[]>([]);
     const [ maquinas, setMaquinas ] = useState<Maquina[]>([]);
 
     const [deleteEmpresasDialog, setDeleteEmpresasDialog] = useState(false);
@@ -91,18 +93,18 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
     const [ date1, setAlteraData1 ] = useState<Date | Date[] | undefined>(undefined);
 
      /*Copiar estas variávies*/
-     const [ entidades, setEntidades ] = useState<Medicao[]>([]);
-     const [ entidade, setEntidade ] = useState<Medicao>(null);
+     const [ entidades, setEntidades ] = useState<EmpresaEmail[]>([]);
+     const [ entidade, setEntidade ] = useState<EmpresaEmail>(null);
      const [mostraBotao, setMostraBotao] = useState(false);
      const [deleteDialog, setDeleteDialog] = useState(false);
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
-     const entidadeService = useMedicaoService();
+     const entidadeService = useEmpresaEmailService();
     
 
     
 
-    const formik = useFormik<Medicao>({
+    const formik = useFormik<EmpresaEmail>({
         onSubmit,
         initialValues: formScheme,
         validationSchema: validationScheme
@@ -112,8 +114,10 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
 /* Limpar formulário*/ 
 const limparFormulario = () => {
 
-    formik.setFieldValue("medCodigo", '')
-    formik.setFieldValue("medData", '' )
+    formik.setFieldValue("emeCodigo", '')
+    formik.setFieldValue("emeEmail", '' )
+    formik.setFieldValue("emeResponsavel", '' )
+
     
 }
 
@@ -171,7 +175,7 @@ const alterar = async () =>  {
 }
 
 const deletar = async () =>  {
-    entidadeService.deletar(entidade.medCodigo).then(response => {
+    entidadeService.deletar(entidade.emeCodigo).then(response => {
         setDeleteDialog(false);  
         toast.current.show({ severity: 'success', summary: 'Deletado com sucesso!!', life: 3000 });
         getEntidades();
@@ -179,21 +183,22 @@ const deletar = async () =>  {
     })
 }
 
-const editEntidade = (entidade: Medicao) => {
+const editEntidade = (entidade: EmpresaEmail) => {
 
     /*Altera caption do botão para ALTERAR*/
     setMostraBotao(true);
 
     /* Campos do formulário*/
 
-    formik.setFieldValue("medCodigo", entidade.medCodigo)
-    formik.setFieldValue("medData", entidade.medData )
+    formik.setFieldValue("emeCodigo", entidade.emeCodigo)
+    formik.setFieldValue("emeEmail", entidade.emeEmail )
+    formik.setFieldValue("emeResponsavel", entidade.emeResponsavel )
     
     
     
 }
 
-const consultaEntidade = (entidade: Medicao) => {
+const consultaEntidade = (entidade: EmpresaEmail) => {
 
     setEntidade({...entidade})
     setEntidadeDialog(true);
@@ -201,7 +206,7 @@ const consultaEntidade = (entidade: Medicao) => {
   
 }
 
-const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
+const confirmDelete = (entidade: React.SetStateAction<EmpresaEmail>) => {
     setEntidade(entidade);
     setDeleteDialog(true);
 }
@@ -231,7 +236,7 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
     const header = (
         <div className="flex flex-column md:flex-row md:align-items-right justify-content-between">
            <div className="mt-1 md:mt-0 flex justify-content-end">
-                <Button icon="pi pi-trash" className="p-button-danger mr-2 p-button-rounded" onClick={confirmDeleteSelected} disabled={!selectedMedicao || !selectedMedicao.length} tooltip="Delete" tooltipOptions={{position: 'bottom'}} />
+                <Button icon="pi pi-trash" className="p-button-danger mr-2 p-button-rounded" onClick={confirmDeleteSelected} disabled={!selectedEmpresaEmail || !selectedEmpresaEmail.length} tooltip="Delete" tooltipOptions={{position: 'bottom'}} />
                 <Button icon="pi pi-upload" className="p-button-help p-button-rounded" onClick={exportCSV} tooltip="Export" tooltipOptions={{position: 'bottom'}} />
                 <span className="p-input-icon-left w-full md:w-auto">
                     <i className="pi pi-search" />
@@ -241,7 +246,7 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
         </div>
     );
 
-    const actionBodyTemplate = (rowData: Medicao) => {
+    const actionBodyTemplate = (rowData: EmpresaEmail) => {
         return (
             <React.Fragment> 
                     <Button icon="pi pi-search" className="p-button-rounded p-button-info"  tooltip='Consultar' tooltipOptions={{position: 'bottom'}} type="button"  onClick={() => consultaEntidade(rowData)}/>      
@@ -316,7 +321,7 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                 <div className="surface-card border-round shadow-2 p-4">
                         
                         
-                        <span className= "text-900 text-2xl font-medium mb-4 block">Abrir Medição</span>
+                        <span className= "text-900 text-2xl font-medium mb-4 block">Cadastro de Email</span>
                         
                         
                         <form onSubmit={formik.handleSubmit}>
@@ -393,19 +398,6 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                                     
                                             </div>*/}
 
-                                            <div className="col-4">
-
-                                                    <span className="ml-2">
-                                                        <label style={{ color: "white" }} htmlFor="medData">Data da Abertura*</label><br></br>
-                                                        <Calendar  id="medData" name="medData" value={date1} onChange={formik.handleChange} dateFormat="dd/mm/yy" mask="99/99/9999" showIcon onBlur={formik.handleBlur}/>
-                                
-
-                                                    </span>
-
-                                                    <small className="p-error p-d-block">
-                                                        {formik.touched && formik.errors.medData}
-                                                    </small>
-                                            </div>
 
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
@@ -418,6 +410,32 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                                                     placeholder="Selecione a Empresa" />
 
                                             </div>
+
+                                            <div className="col-2">
+
+                                                    <span className="ml-2">
+                                                        <label style={{ color: "white" }} htmlFor="emeCodigo">Codigo</label>
+                                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Email" id="emeCodigo" name="emeCodigo" value={formik.values.emeCodigo} />
+
+                                                    </span>
+
+                                    
+                                            </div>
+
+                                            <span >
+                                                 <label style={{ color: "white" }} htmlFor="emeEmail"> Email:</label> <br></br>
+                                                 <InputText style={{ width: "100%" }} placeholder="Digite Email" id="emeEmail" name="emeEmail" value={formik.values.emeEmail} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                            </span>
+
+                                            <span >
+                                                <label style={{ color: "white" }} htmlFor="emeResponsavel"> Responsável:</label> <br></br>
+                                                <InputText style={{ width: "100%" }} placeholder="Digite Responsável" id="emeResponsavel" name="emeResponsavel" value={formik.values.emeResponsavel} onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                            </span>
+
+
+
 
                                             
                                            
@@ -433,14 +451,15 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                                 
                         <div>
 
-                            <DataTable ref={dt} value={entidades} selection={selectedMedicao} onSelectionChange={(e) => setSelectedMedicao(e.value)}
-                                dataKey="medCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
+                            <DataTable ref={dt} value={entidades} selection={selectedEmpresaEmail} onSelectionChange={(e) => setSelectedEmpresaEmail(e.value)}
+                                dataKey="emeCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
                                 globalFilter={globalFilter}  header={header} responsiveLayout="stack">
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
-                                <Column field="medCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
-                                <Column field="medData" header="Data" sortable style={{ minWidth: '16rem' }}></Column>         
+                                <Column field="emeCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
+                                <Column field="emeEmail" header="Email" sortable style={{ minWidth: '16rem' }}></Column> 
+                                <Column field="emeResponsavel" header="Responsável" sortable style={{ minWidth: '16rem' }}></Column> 
                                 <Column field="empresa" header="Empresa" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
@@ -452,8 +471,8 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
              
                                 <div className="col-2">
                                     <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="medCodigo">Codigo</label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Medição" id="medCodigo" name="medCodigo" value={entidade?.medCodigo} />
+                                        <label style={{ color: "white" }} htmlFor="emeCodigo">Codigo</label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Código Email" id="emeCodigo" name="emeCodigo" value={entidade?.emeCodigo} />
 
                                     </span>
 
@@ -462,12 +481,24 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                                 <div className="col-4">
 
                                     <span className="ml-2">
-                                        <label style={{ color: "white" }} htmlFor="medData">Data* </label>
-                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite a Data" id="medData" name="medData" value={entidade?.medData}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+                                        <label style={{ color: "white" }} htmlFor="emeEmail">Email* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Email" id="emeEmail" name="emeEmail" value={entidade?.emeEmail}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
 
                                     </span>
 
                                 </div>
+
+                                <div className="col-4">
+
+                                    <span className="ml-2">
+                                        <label style={{ color: "white" }} htmlFor="emeResponsavel">Responsável* </label>
+                                        <InputText style={{ width: "100%" }}  disabled placeholder="Digite o Responsável" id="emeResponsavel" name="emeResponsavel" value={entidade?.emeResponsavel}  onChange={formik.handleChange} onBlur={formik.handleBlur} />
+
+                                    </span>
+
+                                </div>
+
+                                
 
                                                 
                         </Dialog>
@@ -475,7 +506,7 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
                         <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
                             <div className="flex align-items-center justify-content-center">
                                 <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.medCodigo}</b>?</span>}
+                                {entidade && <span>Tem certeza que quer deletar? <b>{entidade.emeCodigo}</b>?</span>}
                             </div>
                         </Dialog>
 
