@@ -1,6 +1,6 @@
 import {httpClient} from 'app/http'
 import { Maquina } from 'app/model/maquinas'
-import { Setor } from 'app/model/empresas'
+import { Setor } from 'app/model/setor'
 import { AxiosResponse } from 'axios'
 
 

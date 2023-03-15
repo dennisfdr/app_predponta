@@ -1,4 +1,4 @@
-import { Empresa, EmpresaEmail } from 'app/model/empresas'
+import { Empresa } from 'app/model/empresas'
 import { Layout} from 'components'
 //import { EmpresaForm } from './form'
 import { useEmpresaService } from 'app/services'
@@ -21,8 +21,7 @@ export const CadastroEmpresa: React.FC = () => {
     const [ vendaRealizada, setVendaRealizada ] = useState<boolean>(false)
     const [ empresa, setEmpresa ] = useState<Empresa>();
     
-    const [ empresasEmail ] = useState<EmpresaEmail[]>([]);
-    const [ empresaEmail ] = useState<EmpresaEmail>();
+    
 
     const router = useRouter();
     const { empCodigo } = router.query;
