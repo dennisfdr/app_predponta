@@ -20,7 +20,8 @@ import { Maquina } from 'app/model/maquinas'
 import { MaquinaEquipamento } from 'app/model/maquina_equipamentos'
 import { Componente } from 'app/model/componentes'
 
-import { Empresa, Setor } from 'app/model/empresas'
+import { Empresa } from 'app/model/empresas'
+import { Setor } from 'app/model/setor'
 import React from 'react'
 import useSWR from 'swr'
 import { AxiosResponse } from 'axios'
@@ -105,7 +106,7 @@ export const ComponenteForm: React.FC<ComponenteFormProps> = ({
     /*Carregando Empresas/Setor*/
       const getEmpresas = () => {
         empresaService.listar().then(response => setListaEmpresas(response))
-        setListaSetor(null);
+        
       }; 
     
       useEffect(() => { 
@@ -262,7 +263,7 @@ export const ComponenteForm: React.FC<ComponenteFormProps> = ({
     const handleEmpresaChange = (e: { value: Empresa}) => {
         
         setEmpresa(e.value)
-        setListaSetor(e.value.setor)   
+           
     }
 
     

@@ -25,7 +25,8 @@ import { Column } from 'primereact/column'
 import { Dropdown } from 'primereact/dropdown'
 import { validationScheme } from './validationScheme'
 import { Maquina } from 'app/model/maquinas'
-import { Empresa, Setor } from 'app/model/empresas'
+import { Empresa } from 'app/model/empresas'
+import { Setor } from 'app/model/setor'
 import { MaquinaEquipamento } from 'app/model/maquina_equipamentos'
 import { Componente } from 'app/model/componentes'
 import React from 'react'
@@ -369,7 +370,7 @@ const confirmDelete = (entidade: React.SetStateAction<AnaliseOleo>) => {
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-        setListaSetor(e.value.setor)   
+           
     }
 
     const handleSetorChange = (e: { value: any}) => {

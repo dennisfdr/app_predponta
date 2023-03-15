@@ -18,7 +18,8 @@ import { Dropdown } from 'primereact/dropdown'
 import { validationScheme } from './validationScheme'
 import { Maquina } from 'app/model/maquinas'
 import { MaquinaEquipamento } from 'app/model/maquina_equipamentos'
-import { Empresa, Setor } from 'app/model/empresas'
+import { Empresa  } from 'app/model/empresas'
+import { Setor } from 'app/model/setor'
 import React from 'react'
 import useSWR from 'swr'
 import { AxiosResponse } from 'axios'
@@ -263,7 +264,7 @@ export const MaquinaEquipamentoForm: React.FC<MaquinaEquipamentoFormProps> = ({
     const handleEmpresaChange = (e: { value: Empresa}) => {
         
         setEmpresa(e.value)
-        setListaSetor(e.value.setor)   
+        
     }
 
     

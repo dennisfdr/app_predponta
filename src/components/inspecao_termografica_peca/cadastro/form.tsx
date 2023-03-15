@@ -1,5 +1,5 @@
 
- // @ts-nocheck
+ 
 import { replace, useFormik } from 'formik'
 import { 
     AutoComplete, 
@@ -221,13 +221,13 @@ const editEntidade = (entidade: InspecaoTermograficaPeca) => {
     //formik.setFieldValue("inspecaoTermografica", entidade.inspecaoTermografica)
    
     setInspecaoTermografica(entidade.inspecaoTermografica) 
-    setMedicao(entidade.inspecaoTermografica.medicao)
+   /* setMedicao(entidade.inspecaoTermografica.medicao)
     setComponente(entidade.inspecaoTermografica.medicao.componente)
     setMaquinaEquipamento(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO)
     setMaquina(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina)
     setSetor(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor)  
     setEmpresa(entidade.inspecaoTermografica.medicao.componente.maquinaequipamentoMAECODIGO.maquina.setor.empresa)
-    
+    */
 
     
     
@@ -363,7 +363,7 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermograficaPeca>)
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-        setListaSetor(e.value.setor)   
+          
     }
 
     const handleSetorChange = (e: { value: any}) => {
