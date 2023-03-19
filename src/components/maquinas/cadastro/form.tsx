@@ -99,7 +99,7 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
     /*Carregando Empresas/Setor*/
       const getEmpresas = () => {
         empresaService.listar().then(response => setListaEmpresas(response))
-        setListaSetor(null);
+        
       }; 
     
       useEffect(() => { 

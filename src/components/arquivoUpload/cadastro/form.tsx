@@ -41,6 +41,8 @@ import { Calendar } from 'primereact/calendar'
 
 import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 
 interface ArquivoUploadFormProps {
@@ -104,6 +106,8 @@ export const ArquivoUploadForm: React.FC<ArquivoUploadFormProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useArquivoUploadService();
+     const router = useRouter() 
+     const {    query: { id },  } = router
 
     /*Tratamento de Imagens*/
     const [images, setImages] = useState([])
@@ -165,7 +169,30 @@ const getEntidades = () => {
     
   }, []);
 
+const carregarEmpresabyId = () =>  {
+
+    if (id != null){
+        empresaService.carregar(id).then(empresa => { 
+            setEmpresa(empresa);
+            formik.setFieldValue("empresa", empresa);
+            
+        });
+    }   
+
+} 
+
+useEffect(() => { 
+
+carregarEmpresabyId();
+
+}, []);
+
   const salvar = (entidade: ArquivoUpload) => { 
+
+    if(id != null){
+        carregarEmpresabyId();
+        
+    } 
    
    
     entidadeService.salvar(entidade).then(response => {
@@ -496,7 +523,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                     
                                             </div>*/}
 
-                                            
+                                        {!id &&  
 
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
@@ -509,7 +536,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                                     placeholder="Selecione a Empresa" />
 
                                             </div>
-
+                                        }
 
                                             <div className="col-2">
 
@@ -628,6 +655,15 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                     } {mostraBotao &&
                                         <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     } 
+
+                                        <Link href={{ 
+                                                pathname: "/cadastros/setor", 
+                                                query: { id: empresa?.empCodigo },
+                                                
+                                                }}>
+                                                <Button>Cadastrar Setor </Button>  
+                                                
+                                        </Link>
                                 
 
                                 
@@ -637,7 +673,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                 dataKey="aruCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
-                                globalFilter={globalFilter}  header={header} responsiveLayout="stack">
+                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" emptyMessage="Nenhum registro cadastrado">
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="aruCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="aruData" header="Data" sortable style={{ minWidth: '16rem' }}></Column> 
@@ -645,7 +681,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                 <Column header="Image" body={imageBodyTemplate}></Column>
                                 <Column field="aruArquivo" header="Imagem" sortable style={{ minWidth: '16rem' }}></Column> 
                                 <Column field="aruNomeOriginalArquivo" header="Nome Original" sortable style={{ minWidth: '16rem' }}></Column> 
-                                 <Column field="empresa.empCodigo" header="Empresa" sortable style={{ minWidth: '10rem' }}></Column>
+                                 <Column field="empresa" header="Empresa" sortable style={{ minWidth: '10rem' }}></Column>
                                 <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
                                 
                             </DataTable>

@@ -40,6 +40,9 @@ import { TabPanel, TabView } from 'primereact/tabview'
 import { Setor } from 'app/model/setor'
 import { Calendar } from 'primereact/calendar'
 import { Tag } from 'primereact/tag';
+import { useRouter } from "next/router"
+
+
 
 
 
@@ -71,6 +74,7 @@ export const SetorForm: React.FC<SetorFormProps> = ({
     const [ mensagem, setMensagem] = useState<string>('')
     const [ maquina, setMaquina ] = useState<Maquina>(null);
     const [ empresa, setEmpresa] = useState<Empresa>(null);
+    
    // const [ listaSetor, setListaSetor] = useState<Setor[]>([])
     const [ listaMaquina, setListaMaquina ] = useState<Maquina[]>([]);
     const [ listaMaquinaEquipamento, setListaMaquinaEquipamento ] = useState<MaquinaEquipamento[]>([]);
@@ -102,7 +106,12 @@ export const SetorForm: React.FC<SetorFormProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useSetorService();
-    
+     const [ empresaSession, setEmpresaSession] = useState(null)
+     const router = useRouter() 
+     const {    query: { id },  } = router
+
+
+   
 
     
 
@@ -126,14 +135,15 @@ const limparFormulario = () => {
 
 
 
-/*Carregando Empresas/Setor*/
+/*Carregando Empresas*/
   const getEmpresas = () => {
-    empresaService.listar().then(response => setListaEmpresas(response))
-    //setListaSetor(null);
+        
+    empresaService.listar().then(response => setListaEmpresas(response));
+    
   }; 
 
   useEffect(() => { 
-   
+    
     getEmpresas();
     
   }, []); 
@@ -151,7 +161,33 @@ const getEntidades = () => {
     
   }, []);
 
-  const salvar = () => { 
+
+  const carregarEmpresabyId = () =>  {
+
+    if (id != null){
+        empresaService.carregar(id).then(empresa => { 
+            setEmpresa(empresa);
+            formik.setFieldValue("empresa", empresa);
+            
+        });
+    }   
+
+  } 
+  
+  useEffect(() => { 
+   
+    carregarEmpresabyId();
+    
+  }, []);
+
+  const salvar = () => {
+    
+    if(id != null){
+        carregarEmpresabyId();
+        
+    }    
+  
+
     entidadeService.salvar(formik.values).then(response => {
             setEntidade(response); 
             //setEntidades((state) => [...state, { ...response }]);  
@@ -159,9 +195,6 @@ const getEntidades = () => {
             /*Limpando formulário*/
             limparFormulario(); 
             getEntidades();
-            
-        
-
         })       
     }
 
@@ -261,11 +294,11 @@ const confirmDelete = (entidade: React.SetStateAction<Setor>) => {
     }
 
     const statusBodyTemplate = (setor: Setor  ) => {
-        return <Tag value={setor.setStatus.toString()} severity={getSeverity(setor)}></Tag>;
+        return <Tag value={setor.setStatus?.toString()} severity={getSeverity(setor)}></Tag>;
     };
 
     const getSeverity = (setor: Setor) => {
-        switch (setor.setStatus.toString()) {
+        switch (setor.setStatus?.toString()) {
             case 'TRUE':
                 return 'success';
 
@@ -421,7 +454,7 @@ const confirmDelete = (entidade: React.SetStateAction<Setor>) => {
                                     
                                             </div>*/}
 
-
+                                        {!id &&
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
@@ -433,7 +466,7 @@ const confirmDelete = (entidade: React.SetStateAction<Setor>) => {
                                                     placeholder="Selecione a Empresa" />
 
                                             </div>
-
+                                        }
                                             <div className="col-2">
 
                                                     <span className="ml-2">
@@ -479,7 +512,7 @@ const confirmDelete = (entidade: React.SetStateAction<Setor>) => {
                                 dataKey="setCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
-                                globalFilter={globalFilter}  header={header} responsiveLayout="stack">
+                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" emptyMessage="Nenhum registro cadastrado">
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="setCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="setNome" header="Nome" sortable style={{ minWidth: '16rem' }}></Column> 

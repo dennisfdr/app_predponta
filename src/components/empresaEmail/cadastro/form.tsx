@@ -38,6 +38,8 @@ import { Toast } from 'primereact/toast'
 import { TabPanel, TabView } from 'primereact/tabview'
 import { EmpresaEmail } from 'app/model/empresaEmail'
 import { Calendar } from 'primereact/calendar'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 
 
 
@@ -100,7 +102,9 @@ export const EmpresaEmailForm: React.FC<EmpresaEmailFormProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useEmpresaEmailService();
-    
+
+     const router = useRouter() 
+     const {    query: { id },  } = router
 
     
 
@@ -123,10 +127,10 @@ const limparFormulario = () => {
 
 
 
-/*Carregando Empresas/Setor*/
+/*Carregando Empresas*/
   const getEmpresas = () => {
     empresaService.listar().then(response => setListaEmpresas(response))
-    //setListaSetor(null);
+    
   }; 
 
   useEffect(() => { 
@@ -148,7 +152,31 @@ const getEntidades = () => {
     
   }, []);
 
+  const carregarEmpresabyId = () =>  {
+
+    if (id != null){
+        empresaService.carregar(id).then(empresa => { 
+            setEmpresa(empresa);
+            formik.setFieldValue("empresa", empresa);
+            
+        });
+    }    
+
+} 
+
+useEffect(() => { 
+
+carregarEmpresabyId();
+
+}, []);
+
   const salvar = () => { 
+    
+    if(id != null){
+        carregarEmpresabyId();
+        
+    } 
+
     entidadeService.salvar(formik.values).then(response => {
             setEntidade(response); 
             //setEntidades((state) => [...state, { ...response }]);  
@@ -398,7 +426,7 @@ const confirmDelete = (entidade: React.SetStateAction<EmpresaEmail>) => {
                                     
                                             </div>*/}
 
-
+                                        {!id &&
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
@@ -410,7 +438,7 @@ const confirmDelete = (entidade: React.SetStateAction<EmpresaEmail>) => {
                                                     placeholder="Selecione a Empresa" />
 
                                             </div>
-
+                                        }
                                             <div className="col-2">
 
                                                     <span className="ml-2">
@@ -446,6 +474,15 @@ const confirmDelete = (entidade: React.SetStateAction<EmpresaEmail>) => {
                                     } {mostraBotao &&
                                         <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     } 
+
+                                        <Link href={{ 
+                                                pathname: "/cadastros/arquivoUpload", 
+                                                query: { id: empresa?.empCodigo },
+                                                
+                                                }}>
+                                                <Button>Cadastrar Imagens </Button>  
+                                                
+                                        </Link>
                                 
 
                                 
@@ -455,7 +492,7 @@ const confirmDelete = (entidade: React.SetStateAction<EmpresaEmail>) => {
                                 dataKey="emeCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
-                                globalFilter={globalFilter}  header={header} responsiveLayout="stack">
+                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" emptyMessage="Nenhum registro cadastrado">
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="emeCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="emeEmail" header="Email" sortable style={{ minWidth: '16rem' }}></Column> 

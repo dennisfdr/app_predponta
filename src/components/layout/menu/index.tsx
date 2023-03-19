@@ -66,7 +66,14 @@ const items = [
          },
 
          {
-            label:'Categoria subComponente',
+            label:'Categoria',
+            icon:'pi pi-fw pi-briefcase',
+            command:() => (Router.push("/cadastros/categoria"))
+
+         },
+
+         {
+            label:'SubComponente',
             icon:'pi pi-fw pi-briefcase',
             command:() => (Router.push("/cadastros/sub_componente"))
 
@@ -94,7 +101,7 @@ const items = [
          },*/
          
          
-       /*  {
+       {
             label:'Máquina',
             icon:'pi pi-fw pi-bars',
             items:[
@@ -160,7 +167,7 @@ const items = [
                
 
             ]
-         },*/
+         },
          
          
         

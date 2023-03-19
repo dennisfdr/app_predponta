@@ -12,6 +12,7 @@ import { TabView, TabPanel } from 'primereact/tabview';
 
 
 
+
 import Image from 'next/image'
 
 
@@ -34,6 +35,8 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 import { Dialog } from "primereact/dialog";
 import { getEnvironmentData } from "worker_threads";
+import Link from "next/link";
+
 
 
 
@@ -65,15 +68,8 @@ const formScheme: Empresa = {
 }
 
 export const EmpresaForm: React.FC<EmpresaFormProps> = ({
-
-
-  
-   
     empresaSalvo,
     onSubmit
-
-    
-    
 
 }) => {
 
@@ -122,6 +118,8 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
 
 
     const [ empresas, setEmpresas ] = useState<Empresa[]>([]);
+
+   
    
 
 
@@ -130,6 +128,8 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
 
    const [mostraBotao, setMostraBotao] = useState(false);
    const [deleteDialog, setDeleteDialog] = useState(false);
+  
+  
     
 
    
@@ -184,20 +184,21 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
         getData();
         
       }, []); 
+
+     
     
     const salvar = () => { 
         service.salvar(formik.values).then(response => {
             setEmpresa(response); 
             setEmpresas((state) => [...state, { ...response }]);  
             setEmpresaSalvo(response)
+            
             toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            
+           
             /*Limpando formulário*/
             limparFormulario();
-            
             getData();
-            setActiveIndex1(1);
-            
-
         })       
     }
 
@@ -430,28 +431,7 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
         }
       };
       
-      
-     
-
-   
-
-
-      
-
-
-       
-       
-
-       
-
-        
-
-            
-
-        
-        
-
-
+ 
     return (
 
        
@@ -542,20 +522,26 @@ export const EmpresaForm: React.FC<EmpresaFormProps> = ({
                                     </span>
                                 </div>
 
-                                <div className="col-2" >
+                                <div className="col-4" >
 
-                                    
+                                    {!mostraBotao &&
+                                            <Button type="button" label="Salvar Empresa" icon="pi pi-check" onClick={salvar}/>
+                                        } {mostraBotao &&
+                                            <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
+                                        } 
 
-                                {!mostraBotao &&
-                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
-                                    } {mostraBotao &&
-                                        <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
-                                    }  
+                                        <Link href={{ 
+                                                pathname: "/cadastros/empresaEmail", 
+                                                query: { id: empresa?.empCodigo },
+                                                
+                                                }}>
+                                                <Button>Cadastrar Email </Button>  
+                                                
+                                        </Link>
 
 
-                                </div>
-
-                            </div>    
+                               </div>
+                               </div>
                         <div>
 
                                 <DataTable ref={dt} value={empresas} selection={selectedEmpresas} onSelectionChange={(e) => setSelectedEmpresas(e.value)}

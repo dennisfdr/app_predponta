@@ -1,3 +1,5 @@
+import { ReactSession } from 'react-client-session';
+
 export { CadastroComponentePeca } from './componente_peca'
 export { CadastroComponenteSubComponente } from './componente_subcomponente'
 export {CadastroEmpresa}   from './empresas'
@@ -27,3 +29,6 @@ export { CadastroMcaStatus } from './mca_status'
 export { CadastroCategoria } from './categoria'
 export { CadastroMaquinaEquipamento } from './maquina_equipamento'
 export { CadastroComponente } from './componente'
+export {
+    ReactSession
+  };
