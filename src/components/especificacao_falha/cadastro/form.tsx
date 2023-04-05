@@ -17,7 +17,8 @@ import {
     useInspecaoTermograficaService,
     useInspecaoTermograficaPecaService,
     useCondicoesAmbienteService,
-    useEspecificacaoFalhaService, 
+    useEspecificacaoFalhaService,
+    useSetorService, 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -134,6 +135,7 @@ export const EspecificacaoFalhaForm: React.FC<EspecificacaoFalhaFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useEspecificacaoFalhaService();
+    const setorService = useSetorService();
     
 
     
@@ -329,7 +331,7 @@ const confirmDelete = (entidade: React.SetStateAction<EspecificacaoFalha>) => {
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-           
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))  
     }
 
     const handleSetorChange = (e: { value: any}) => {

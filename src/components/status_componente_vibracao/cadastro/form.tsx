@@ -15,7 +15,8 @@ import {
     useComponenteService,
     useMedicaoService,
     useMedicaoAnaliseVibracaoService, 
-    useStatusComponenteVibracaoService
+    useStatusComponenteVibracaoService,
+    useSetorService
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -116,6 +117,7 @@ export const StatusComponenteVibracaoForm: React.FC<StatusComponenteVibracaoForm
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useStatusComponenteVibracaoService();
+    const setorService = useSetorService();
     
 
     
@@ -299,7 +301,8 @@ const confirmDelete = (entidade: React.SetStateAction<StatusComponenteVibracao>)
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))               
            
     }
 

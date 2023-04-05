@@ -30,7 +30,7 @@ import { MaquinaEquipamento } from 'app/model/maquina_equipamentos'
 import { Componente } from 'app/model/componentes'
 import React from 'react'
 import useSWR from 'swr'
-import { AxiosResponse } from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import { httpClient } from 'app/http'
 import { getEnvironmentData } from 'worker_threads'
 import { Checkbox } from 'primereact/checkbox'
@@ -43,6 +43,9 @@ import Zoom from 'react-medium-image-zoom'
 import 'react-medium-image-zoom/dist/styles.css'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
+
+import FormData from 'form-data'
+
 
 
 interface ArquivoUploadFormProps {
@@ -57,6 +60,7 @@ const formScheme: ArquivoUpload = {
     aruNomeOriginalArquivo:'',
     aruData:'',
     empresa: null 
+    
     
 }
 
@@ -119,6 +123,8 @@ export const ArquivoUploadForm: React.FC<ArquivoUploadFormProps> = ({
     const [ aruDataVisao, setAruDataVisao ] = useState<Date | Date[] | undefined>(undefined);
     const [ aruArquivoVisao, setAruArquivoVisao] = useState(null);
     const [ index, setIndex] = useState(0);
+
+    const [image, setImage] = useState(undefined);
     
 
     
@@ -187,26 +193,87 @@ carregarEmpresabyId();
 
 }, []);
 
-  const salvar = (entidade: ArquivoUpload) => { 
+
+/*const uploadImage = async  (e: { preventDefault: () => void }, entidade: ArquivoUpload) =>  {
+    e.preventDefault();
+    const formData = new FormData();
+    formData.append('image', image);
+
+    const headers = {
+      'headers': {
+        'Content-Type': 'application/json'
+      }
+    }*/
+
+ const salvar = async () => { 
 
     if(id != null){
         carregarEmpresabyId();
         
     } 
-   
-   
-    entidadeService.salvar(entidade).then(response => {
-            setEntidade(response); 
+
+    const formData = new FormData();
+    formData.append('image', image);
+    formData.append('aruDescricao', aruDescricaoVisao)
+    formData.append('aruData', aruDataVisao)
+    formData.append('empresa', empresa.empCodigo)
+
+    /*const headers = {
+      'headers': {
+        'Content-Type': 'application/json'
+      }
+    }*/
+    
+
+   /* axios({
+        method: "post",
+        url: "http://localhost:8080/arquivouploads",
+        data: formData,
+       
+      })
+        .then(function (response) {
+          //handle success
+          console.log(response);
+        })
+        .catch(function (response) {
+          //handle error
+          console.log(response);
+        });*/
+        
+        const config = {     
+            headers: { 'content-type': 'multipart/form-data' }
+        }
+
+
+      await  axios.post("http://localhost:8080/arquivouploads", formData)
+        .then (res => {
+            setEntidade(res.data); 
             //setEntidades((state) => [...state, { ...response }]);  
             toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
             /*Limpando formulário*/
             limparFormulario(); 
             getEntidades();
+        })
+
+    
+
+   
+   
+   
+    {/*await entidadeService.salvar(formData).then(response => {
+            setEntidade(response); 
+            //setEntidades((state) => [...state, { ...response }]);  
+            toast.current.show({ severity: 'success', summary: 'Cadastro com sucesso', life: 3000 });
+            /*Limpando formulário
+            limparFormulario(); 
+            getEntidades();
             
         
 
-        })       
+        } */}
+           
     }
+
 
 const alterar = async () =>  {
     entidadeService.atualizar(formik.values).then(response => {
@@ -356,12 +423,16 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
 
 
     const imageBodyTemplate = (rowData: ArquivoUpload) => {
+        
+        const imagemBanco = "http://localhost:8080/user-photos/"+rowData.aruCodigo+"/"+rowData.aruNomeOriginalArquivo
+        console.log(imagemBanco)
         return (
                  <Zoom>
                      <img
                          alt="Clique para exapandir a imagem"
-                         src={rowData.aruArquivo}
-                         width="500"
+                         src={imagemBanco}
+                         height="50"
+                         width="50"
                       />
                  </Zoom>      
                 
@@ -375,7 +446,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
 
     
 
-      const handleAddImagens = () => {   
+     /* const handleAddImagens = () => {   
           
         
         let _entidade = {...entidade}
@@ -397,7 +468,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
         
         console.log(entidade)
        
-    }
+    }*/
 
     const converteData = (dataImagem: Date | Date[]) => {
  
@@ -611,9 +682,9 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                             <div className="col-2">
                                                 <span className="ml-2">
                                     
-                                                        <input type="file" style={{ display: "none" }} id="aruArquivoVisao" name="aruArquivoVisao" accept="image/*"   onChange={uploadImageToClient} />
+                                                        <input type="file" style={{ display: "none" }} id="image" name="image" accept="image/*"   onChange={e => setImage(e.target.files[0])} />
                                                         <>                   
-                                                        <label  className="avatar" htmlFor="aruArquivoVisao"  >Carregar Imagens: *</label>                               
+                                                        <label  className="avatar" htmlFor="image"  >Carregar Imagens: *</label>                               
                                                         <style jsx global>{`
                                                             .avatar {
                                                                         border-radius: 5px;
@@ -651,7 +722,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                     </div>
 
                                     {!mostraBotao &&
-                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={handleAddImagens}/>
+                                        <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
                                     } {mostraBotao &&
                                         <Button  type="button" label="Alterar" icon="pi pi-check" onClick={alterar}/>
                                     } 
@@ -673,7 +744,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
                                 dataKey="aruCodigo" paginator rows={10} rowsPerPageOptions={[5, 10, 25]}
                                 paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                 currentPageReportTemplate="Showing {first} to {last} of {totalRecords} Histórico Componentes"
-                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" emptyMessage="Nenhum registro cadastrado">
+                                globalFilter={globalFilter}  header={header} responsiveLayout="stack" emptyMessage="Nenhum registro cadastrado" lazy>
                                 <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} exportable={false}></Column>
                                 <Column field="aruCodigo" header="Código" sortable style={{ minWidth: '12rem' }}></Column>
                                 <Column field="aruData" header="Data" sortable style={{ minWidth: '16rem' }}></Column> 

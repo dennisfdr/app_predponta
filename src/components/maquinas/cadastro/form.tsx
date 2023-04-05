@@ -8,7 +8,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 
-import { useEmpresaService, useMaquinaService } from 'app/services'
+import { useEmpresaService, useMaquinaService, useSetorService } from 'app/services'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Dialog } from 'primereact/dialog'
@@ -51,6 +51,7 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
     
     const maquinaService = useMaquinaService();
     const empresaService = useEmpresaService();
+    const setorService = useSetorService();
     
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
@@ -255,8 +256,9 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        
         setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
+
          
     }
 
@@ -287,7 +289,6 @@ export const MaquinaForm: React.FC<MaquinaFormProps> = ({
                                                     value={empresa} 
                                                     options={listaEmpresas}
                                                     onChange={handleEmpresaChange}
-                                                    
                                                     optionLabel="empNome" 
                                                     placeholder="Selecione a Empresa" />
 

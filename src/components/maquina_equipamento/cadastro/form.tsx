@@ -8,7 +8,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 
-import { useEmpresaService, useMaquinaService, useMaquinaEquipamentoService } from 'app/services'
+import { useEmpresaService, useMaquinaService, useMaquinaEquipamentoService, useSetorService } from 'app/services'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Dialog } from 'primereact/dialog'
@@ -53,6 +53,7 @@ export const MaquinaEquipamentoForm: React.FC<MaquinaEquipamentoFormProps> = ({
     const maquinaService = useMaquinaService();
     const empresaService = useEmpresaService();
     const maquinaEquipamentoService = useMaquinaEquipamentoService();
+    const setorService = useSetorService();
     
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
@@ -264,7 +265,7 @@ export const MaquinaEquipamentoForm: React.FC<MaquinaEquipamentoFormProps> = ({
     const handleEmpresaChange = (e: { value: Empresa}) => {
         
         setEmpresa(e.value)
-        
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
     }
 
     

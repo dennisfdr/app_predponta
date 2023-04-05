@@ -14,7 +14,8 @@ import {
     useMaquinaEquipamentoService, 
     useComponenteService,
     useMedicaoService,
-    useInspecaoAcusticaLocalService 
+    useInspecaoAcusticaLocalService, 
+    useSetorService
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -109,6 +110,7 @@ export const InspecaoAcusticaLocalForm: React.FC<InspecaoAcusticaLocalFormProps>
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useInspecaoAcusticaLocalService();
+     const setorService = useSetorService();
     
 
     
@@ -290,7 +292,8 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoAcusticaLocal>) =>
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))               
           
     }
 

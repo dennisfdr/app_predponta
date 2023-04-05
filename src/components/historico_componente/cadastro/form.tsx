@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useHistoricoComponenteService 
+    useHistoricoComponenteService,
+    useSetorService 
     
 } from 'app/services'
 
@@ -64,7 +65,7 @@ export const HistoricoComponenteForm: React.FC<HistoricoComponenteFormProps> = (
     const empresaService = useEmpresaService();
     const maquinaEquipamentoService = useMaquinaEquipamentoService();
     const componenteService = useComponenteService();
-    
+    const setorService = useSetorService();
     
     
     
@@ -282,8 +283,8 @@ const confirmDelete = (entidade: React.SetStateAction<HistoricoComponente>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
-        
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
     }
 
     const handleSetorChange = (e: { value: any}) => {

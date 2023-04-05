@@ -39,7 +39,7 @@ export const CadastroArquivoUpload: React.FC = () => {
             })
         }  else {
             
-            service.salvar(arquivoUpload)
+            /*service.salvar(arquivoUpload)
             
                     .then(ArquivoUploadSalvo => {                       
                         setArquivoUpload(ArquivoUploadSalvo);                     
@@ -48,7 +48,7 @@ export const CadastroArquivoUpload: React.FC = () => {
                         }])
                         
                                         
-                    })
+                    })*/
             } 
     }    
 

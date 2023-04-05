@@ -15,7 +15,8 @@ import {
     useComponenteService, 
     useRelatorioIntervencaoService,
     useMedicaoService,
-    useInspecaoAcusticaLocalService } from 'app/services'
+    useInspecaoAcusticaLocalService, 
+    useSetorService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -102,6 +103,7 @@ export const RelatorioIntervencaoForm: React.FC<RelatorioIntervencaoFormProps> =
     const componenteService = useComponenteService();
     const medicaoService = useMedicaoService();
     const inspecaoAcusticaLocalService = useInspecaoAcusticaLocalService();
+    const setorService = useSetorService();
     
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
@@ -383,7 +385,8 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
           
     }
 

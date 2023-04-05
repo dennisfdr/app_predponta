@@ -16,7 +16,8 @@ import {
     useRelatorioIntervencaoService,
     useMedicaoService,
     useInspecaoAcusticaLocalService,
-    useFalhaService } from 'app/services'
+    useFalhaService, 
+    useSetorService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -115,6 +116,7 @@ export const FalhaForm: React.FC<FalhaFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useFalhaService();
+    const setorService = useSetorService();
     
 
     
@@ -292,7 +294,8 @@ const confirmDelete = (entidade: React.SetStateAction<Falha>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))                
          
     }
 

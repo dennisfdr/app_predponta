@@ -19,7 +19,8 @@ import {
     useMcaRelatorioService,
     useMcaCircuitoService,
     useMcaStatusRelatorioService,
-    useMcaStatusService, 
+    useMcaStatusService,
+    useSetorService, 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -131,6 +132,7 @@ export const McaStatusForm: React.FC<McaStatusFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useMcaStatusService();
+    const setorService = useSetorService();
     
 
     
@@ -311,7 +313,7 @@ const confirmDelete = (entidade: React.SetStateAction<McaStatus>) => {
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-        setListaSetor(e.value.setor)   
+       setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))  
     }
 
     const handleSetorChange = (e: { value: any}) => {

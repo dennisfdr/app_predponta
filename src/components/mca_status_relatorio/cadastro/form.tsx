@@ -18,7 +18,8 @@ import {
     useMcaMedicaoService,
     useMcaRelatorioService,
     useMcaCircuitoService,
-    useMcaStatusRelatorioService, 
+    useMcaStatusRelatorioService,
+    useSetorService 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -127,6 +128,7 @@ export const McaStatusRelatorioForm: React.FC<McaStatusRelatorioFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useMcaStatusRelatorioService();
+    const setorService = useSetorService();
     
 
     

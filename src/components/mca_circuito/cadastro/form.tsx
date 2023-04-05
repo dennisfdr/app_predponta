@@ -17,7 +17,8 @@ import {
     useAnaliseOleoService,
     useMcaMedicaoService,
     useMcaRelatorioService,
-    useMcaCircuitoService, 
+    useMcaCircuitoService,
+    useSetorService 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -125,6 +126,7 @@ export const McaCircuitoForm: React.FC<McaCircuitoFormProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useMcaCircuitoService();
+     const setorService = useSetorService();
 
     
 
@@ -305,7 +307,7 @@ const confirmDelete = (entidade: React.SetStateAction<McaCircuito>) => {
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-        setListaSetor(e.value.setor)   
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))   
     }
 
     const handleSetorChange = (e: { value: any}) => {

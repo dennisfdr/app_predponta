@@ -15,7 +15,8 @@ import {
     useComponenteService,
     useMedicaoService,
     useAnaliseOleoService,
-    useMcaMedicaoService, 
+    useMcaMedicaoService,
+    useSetorService, 
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -113,6 +114,7 @@ export const McaMedicaoForm: React.FC<McaMedicaoFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useMcaMedicaoService();
+    const setorService = useSetorService();
     
 
     
@@ -292,7 +294,7 @@ const confirmDelete = (entidade: React.SetStateAction<McaMedicao>) => {
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-         
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
     }
 
     const handleSetorChange = (e: { value: any}) => {

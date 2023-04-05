@@ -16,7 +16,8 @@ import {
     useMedicaoService,
     useMedicaoAnaliseVibracaoService,
     useStatusComponenteVibracaoService,
-    useHistoricoComponenteVibracaoService 
+    useHistoricoComponenteVibracaoService, 
+    useSetorService
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -121,6 +122,7 @@ export const HistoricoComponenteVibracaoForm: React.FC<HistoricoComponenteVibrac
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useHistoricoComponenteVibracaoService();
+    const setorService = useSetorService();
     
 
     
@@ -300,7 +302,8 @@ const confirmDelete = (entidade: React.SetStateAction<HistoricoComponenteVibraca
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value) 
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))              
            
     }
 

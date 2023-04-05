@@ -136,11 +136,11 @@ const items = [
                            command:() => (Router.push("/cadastros/componente_peca")),
                         }, 
          
-                        {
+                        /*{
                            label:'SubComponente',
                            icon:'pi pi-clone pi-align-right',
                            command:() => (Router.push("/cadastros/sub_componente")),
-                        },
+                        },*/
          
                         {
                            label:'CompSubComp',
@@ -154,11 +154,11 @@ const items = [
                            command:() => (Router.push("/cadastros/historico_componente")),
                         }, 
 
-                        {
+                        /*{
                            label:'Status Sub Componente',
                            icon:'pi pi-check pi-align-right',
                            command:() => (Router.push("/cadastros/status_sub_componente")),
-                        },
+                        },*/
 
 
                   ]

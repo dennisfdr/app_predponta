@@ -15,7 +15,8 @@ import {
     useComponenteService,
     useComponentePecaService,
     useSubComponenteService,
-    useComponente_Sub_ComponenteService 
+    useComponente_Sub_ComponenteService,
+    useSetorService 
     } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -68,6 +69,7 @@ export const Componente_Sub_ComponenteForm: React.FC<Componete_Sub_ComponenteFor
     const componenteService = useComponenteService();
     const componentePecaService = useComponentePecaService();
     const subComponenteService = useSubComponenteService();
+    const setorService = useSetorService();
     
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
@@ -284,7 +286,8 @@ const confirmDelete = (entidade: React.SetStateAction<Componente_Sub_Componente>
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value) 
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))           
            
     }
 

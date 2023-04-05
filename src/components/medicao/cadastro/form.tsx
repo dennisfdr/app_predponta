@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useMedicaoService } from 'app/services'
+    useMedicaoService,
+    useSetorService } from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -68,7 +69,7 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
     const [ mensagem, setMensagem] = useState<string>('')
     const [ maquina, setMaquina ] = useState<Maquina>(null);
     const [ empresa, setEmpresa] = useState<Empresa>(null);
-   // const [ listaSetor, setListaSetor] = useState<Setor[]>([])
+    const [ listaSetor, setListaSetor] = useState<Setor[]>([])
     const [ listaMaquina, setListaMaquina ] = useState<Maquina[]>([]);
     const [ listaMaquinaEquipamento, setListaMaquinaEquipamento ] = useState<MaquinaEquipamento[]>([]);
     const [ listaComponente, setListaComponente ] = useState<Componente[]>([]);
@@ -76,7 +77,7 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
 
     const [ maquinaEquipamento, setMaquinaEquipamento ] = useState<MaquinaEquipamento>(null);
     const [ componente, setComponente ] = useState<Componente>(null);
- //   const [ setor, setSetor ] = useState<Setor>(null);
+    const [ setor, setSetor ] = useState<Setor>(null);
 
 
 
@@ -99,6 +100,7 @@ export const MedicaoForm: React.FC<MedicaoFormProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useMedicaoService();
+     const setorService = useSetorService();
     
 
     
@@ -275,7 +277,8 @@ const confirmDelete = (entidade: React.SetStateAction<Medicao>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value) 
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))            
         formik.setFieldValue("empresa", e.value)   
     }
 

@@ -13,7 +13,8 @@ import {
     useMaquinaService, 
     useMaquinaEquipamentoService, 
     useComponenteService,
-    useComponentePecaService } from 'app/services'
+    useComponentePecaService, 
+    useSetorService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -98,6 +99,7 @@ export const ComponentePecaForm: React.FC<ComponentePecaFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useComponentePecaService();
+    const setorService = useSetorService();
 
     
 
@@ -276,7 +278,8 @@ const confirmDelete = (entidade: React.SetStateAction<Componente_Peca>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))              
           
     }
 

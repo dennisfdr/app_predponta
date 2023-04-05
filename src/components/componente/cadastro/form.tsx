@@ -8,7 +8,7 @@ import {
 import { FormEvent, useEffect, useRef, useState } from 'react'
 
 
-import { useEmpresaService, useMaquinaService, useMaquinaEquipamentoService, useComponenteService } from 'app/services'
+import { useEmpresaService, useMaquinaService, useMaquinaEquipamentoService, useComponenteService, useSetorService } from 'app/services'
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
 import { Dialog } from 'primereact/dialog'
@@ -55,6 +55,7 @@ export const ComponenteForm: React.FC<ComponenteFormProps> = ({
     const empresaService = useEmpresaService();
     const maquinaEquipamentoService = useMaquinaEquipamentoService();
     const componenteService = useComponenteService();
+    const setorService = useSetorService();
     
     const [ listaEmpresas, setListaEmpresas ] = useState<Empresa[]>([])
     const [ mensagem, setMensagem] = useState<string>('')
@@ -261,8 +262,9 @@ export const ComponenteForm: React.FC<ComponenteFormProps> = ({
     /*Métodos para carregar dados combos*/
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        
         setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
+        
            
     }
 

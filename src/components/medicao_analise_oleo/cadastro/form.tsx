@@ -16,6 +16,7 @@ import {
     useMedicaoService,
     useAnaliseOleoService,
     useMedicaoAnaliseOleoService,
+    useSetorService,
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -117,6 +118,7 @@ export const MedicaoAnaliseOleoForm: React.FC<MedicaoAnaliseOleoFormmProps> = ({
      const [entidadeDialog, setEntidadeDialog] = useState(false);
      const [submitted, setSubmitted] = useState(false);
      const entidadeService = useMedicaoAnaliseOleoService();
+     const setorService = useSetorService();
     
 
     
@@ -294,7 +296,8 @@ const confirmDelete = (entidade: React.SetStateAction<MedicaoAnaliseOleo>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value) 
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))               
            
     }
 

@@ -1,6 +1,8 @@
 import {httpClient} from 'app/http'
 import {ArquivoUpload} from 'app/model/arquivoUpload'
 import { AxiosResponse } from 'axios'
+import FormData from 'form-data'
+import config from 'next/config'
 
 
 
@@ -13,9 +15,11 @@ const resourceURL: string = "/arquivouploads"
 export const useArquivoUploadService = () => {
 
    
-
-    const salvar = async (arquivoUpload: ArquivoUpload) : Promise <ArquivoUpload> => {
-        const response : AxiosResponse <ArquivoUpload> =  await httpClient.post<ArquivoUpload>(resourceURL, arquivoUpload)
+    
+    const salvar = async (arquivoUpload: FormData) : Promise <ArquivoUpload> => {
+        console.log(arquivoUpload)
+        const response : AxiosResponse <ArquivoUpload, FormData> =  await httpClient.post<ArquivoUpload>(resourceURL, arquivoUpload)
+        console.log(arquivoUpload)
         return response.data;
     }
 

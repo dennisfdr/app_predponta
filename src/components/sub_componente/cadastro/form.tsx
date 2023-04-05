@@ -14,7 +14,8 @@ import {
     useMaquinaEquipamentoService, 
     useComponenteService,
     useComponentePecaService,
-    useSubComponenteService } from 'app/services'
+    useSubComponenteService, 
+    useSetorService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -103,6 +104,7 @@ export const Sub_ComponenteForm: React.FC<Sub_ComponenteFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useSubComponenteService();
+    const setorService = useSetorService();
 
     
 
@@ -281,7 +283,8 @@ const confirmDelete = (entidade: React.SetStateAction<Sub_Componente>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))              
            
     }
 

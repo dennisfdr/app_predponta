@@ -15,6 +15,7 @@ import {
     useComponenteService,
     useMedicaoService, 
     useInspecaoTermograficaService,
+    useSetorService,
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -141,6 +142,8 @@ export const InspecaoTermograficaForm: React.FC<InspecaoTermograficaFormFormProp
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useInspecaoTermograficaService();
+    const setorService = useSetorService();
+
     
 
     
@@ -381,7 +384,8 @@ const confirmDelete = (entidade: React.SetStateAction<InspecaoTermografica>) => 
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))              
            
     }
 

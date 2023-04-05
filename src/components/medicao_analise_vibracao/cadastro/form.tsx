@@ -14,7 +14,8 @@ import {
     useMaquinaEquipamentoService, 
     useComponenteService,
     useMedicaoService,
-    useMedicaoAnaliseVibracaoService} from 'app/services'
+    useMedicaoAnaliseVibracaoService,
+    useSetorService} from 'app/services'
 
 import { Button } from 'primereact/button'
 import { InputText } from 'primereact/inputtext'
@@ -107,6 +108,7 @@ export const MedicaoAnaliseVibracaoForm: React.FC<MedicaoAnaliseVibracaoFormProp
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useMedicaoAnaliseVibracaoService();
+    const setorService = useSetorService();
     
 
     
@@ -288,7 +290,7 @@ const confirmDelete = (entidade: React.SetStateAction<MedicaoAnaliseVibracao>) =
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
         setEmpresa(e.value)                 
-          
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))
     }
 
     const handleSetorChange = (e: { value: any}) => {

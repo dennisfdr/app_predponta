@@ -17,6 +17,7 @@ import {
     useInspecaoTermograficaService,
     useInspecaoTermograficaPecaService,
     useCondicoesAmbienteService, 
+    useSetorService
      } from 'app/services'
 
 import { Button } from 'primereact/button'
@@ -125,6 +126,7 @@ export const CondicoesAmbienteForm: React.FC<CondicoesAmbienteFormProps> = ({
     const [entidadeDialog, setEntidadeDialog] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const entidadeService = useCondicoesAmbienteService();
+    const setorService = useSetorService();
     
 
     
@@ -311,7 +313,8 @@ const confirmDelete = (entidade: React.SetStateAction<CondicoesAmbiente>) => {
 
 
     const handleEmpresaChange = (e: { value: Empresa}) => {
-        setEmpresa(e.value)                 
+        setEmpresa(e.value)
+        setorService.carregarByEmpresa(e.value).then(setors => setListaSetor(setors))               
           
     }
 
