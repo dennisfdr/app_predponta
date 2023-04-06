@@ -245,7 +245,7 @@ carregarEmpresabyId();
         }
 
 
-      await  axios.post("http://localhost:8080/arquivouploads", formData)
+      await  axios.post("http://207.244.238.40:14333/arquivouploads", formData)
         .then (res => {
             setEntidade(res.data); 
             //setEntidades((state) => [...state, { ...response }]);  

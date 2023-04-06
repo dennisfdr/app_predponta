@@ -437,7 +437,9 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
 
                             <Toast ref={toast} />
 
-                                        <div className="grid">
+                                       <div className="grid">*/
+                                       
+                                        
                                             <div className="col-6">
                                                 <label style={{ color: "white" }} htmlFor="empresa">Empresa: *</label>
                                                 <Dropdown 
@@ -999,6 +1001,8 @@ const confirmDelete = (entidade: React.SetStateAction<RelatorioIntervencao>) => 
                                         </div>  */}               
                                            
                                     </div>
+                                    
+
 
                                     {!mostraBotao &&
                                         <Button type="button" label="Salvar" icon="pi pi-check" onClick={salvar}/>
