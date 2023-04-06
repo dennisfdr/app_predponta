@@ -245,7 +245,8 @@ carregarEmpresabyId();
         }
 
 
-      await  axios.post("http://207.244.238.40:14333/arquivouploads", formData)
+      //await  axios.post("http://207.244.238.40:14333/arquivouploads", formData)
+      await  axios.post("http://localhost:8080/arquivouploads", formData)
         .then (res => {
             setEntidade(res.data); 
             //setEntidades((state) => [...state, { ...response }]);  
@@ -424,7 +425,7 @@ const confirmDelete = (entidade: React.SetStateAction<ArquivoUpload>) => {
 
     const imageBodyTemplate = (rowData: ArquivoUpload) => {
         
-        const imagemBanco = "http://localhost:8080/user-photos/"+rowData.aruCodigo+"/"+rowData.aruNomeOriginalArquivo
+        const imagemBanco = "http://207.244.238.40:14333/user-photos/"+rowData.aruCodigo+"/"+rowData.aruNomeOriginalArquivo
         console.log(imagemBanco)
         return (
                  <Zoom>
